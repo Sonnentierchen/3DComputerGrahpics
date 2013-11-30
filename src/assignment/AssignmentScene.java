@@ -86,9 +86,9 @@ public class AssignmentScene {
 		/* Author Florian Blume, fblume1@sheffield.ac.uk */
 
 		/* Create room meshes */
-		meshFloor = ProceduralMeshFactory.createPlane(10, 10, 30, 30, 1, 1);
-		meshWallOne = ProceduralMeshFactory.createPlane(10, 2.5, 30, 30, 1, 1);
-		meshWallTwo = ProceduralMeshFactory.createPlane(10, 2.5, 30, 30, 1, 1);
+		meshFloor = ProceduralMeshFactory.createPlane(10, 10, 100, 100, 1, 1);
+		meshWallOne = ProceduralMeshFactory.createPlane(10, 2.5, 100, 100, 1, 1);
+		meshWallTwo = ProceduralMeshFactory.createPlane(10, 2.5, 100, 100, 1, 1);
 		meshWallThree = ProceduralMeshFactory
 				.createPlane(10, 2.5, 30, 30, 1, 1);
 		meshWallFour = ProceduralMeshFactory.createPlane(10, 2.5, 30, 30, 1, 1);

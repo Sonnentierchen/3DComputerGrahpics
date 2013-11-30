@@ -31,6 +31,9 @@ public class JumpLampAnimator implements LampAnimator {
 	@Override
 	public void animateBase(GL2 gl) {
 		if (started) {
+			sinus =  Math.sin(sinusDegree) + 1;
+			double height = Math.exp(-sinus * 7);
+			gl.glTranslated(0, height * 1.5, 0);
 		}
 	}
 

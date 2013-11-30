@@ -404,15 +404,15 @@ public class ProceduralMeshFactory {
 
 		// Create the cylinder length facets
 		for (r = 0; r < slices; r++) {
-			s = Math.sin(angle = r * stepr) * 0.5;
-			c = Math.cos(angle) * 0.5;
+			s = Math.sin(angle = r * stepr) * 0.23;
+			c = Math.cos(angle) * 0.23;
 			vertices[r] = new Vertex(s, c, 0, 1.0 - (double) r / (slices - 1),
 					0.0);
 			vertices[r + 2 * end_offset] = new Vertex(s, c, 0, 1.0 - (double) r
 					/ (slices - 1), 0.0);
 
-			s = Math.sin(angle = r * stepr) * 0.23;
-			c = Math.cos(angle) * 0.23;
+			s = Math.sin(angle = r * stepr) * 0.5;
+			c = Math.cos(angle) * 0.5;
 			vertices[r + end_offset] = new Vertex(s, c, 1.0, 1.0 - (double) r
 					/ (slices - 1), 1.0);
 			vertices[r + 3 * end_offset] = new Vertex(s, c, 1.0, 1.0
@@ -420,7 +420,7 @@ public class ProceduralMeshFactory {
 
 			if (cap) {
 				int cap_offset = 4 * end_offset;
-				vertices[r + cap_offset] = new Vertex(s, c, 1.0, 1.0
+				vertices[r + cap_offset] = new Vertex(s, c, 0, 1.0
 						- (double) r / (slices - 1), 1.0);
 			}
 		}
@@ -438,12 +438,11 @@ public class ProceduralMeshFactory {
 		}
 
 		if (cap) {
-			vertices[vertices.length - 1] = new Vertex(0.0, 0.0, 1.0, 0.5, 0.5);
+			vertices[vertices.length - 1] = new Vertex(0.0, 0.0, 0, 0.5, 0.5);
 			int cap_offset = 4 * end_offset;
 			for (int i = 0; i < slices; i++) {
 				int next_index = (i + 1 < slices ? i + 1 : 0);
-				triangles[i + cap_offset] = new Triangle(next_index
-						+ cap_offset, i + cap_offset, vertices.length - 1);
+				triangles[i + cap_offset] = new Triangle(i, next_index, vertices.length - 1);
 			}
 		}
 
