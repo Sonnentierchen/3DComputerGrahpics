@@ -208,7 +208,7 @@ public class AssignmentScene {
 		gl.glPushMatrix();
 		gl.glRotated(rotate, 0, 1, 0);
 		if (light.getSwitchedOn()) {
-			light.use(gl, glut, true);
+			light.use(gl, glut, false);
 		} else
 			light.disable(gl);
 		gl.glPopMatrix();

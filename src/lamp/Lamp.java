@@ -30,8 +30,8 @@ public class Lamp {
 
 	private boolean switchedOn = true;
 	private boolean showTextures = false;
-	private Texture[] textures = new Texture[5];
-	private Mesh[] meshes = new Mesh[5];
+	private Texture[] textures = new Texture[6];
+	private Mesh[] meshes = new Mesh[6];
 	private Render[] renders;
 	private Light spotLight;
 	private LampAnimator animator;
@@ -49,17 +49,20 @@ public class Lamp {
 		/* Base */
 		meshes[0] = ProceduralMeshFactory.createCylinder(DEFAULT_SLICES,
 				DEFAULT_SLICES, true);
-		/* Lower arm */
+		/* Base-joint */
 		meshes[1] = ProceduralMeshFactory.createCylinder(DEFAULT_SLICES,
 				DEFAULT_SLICES, true);
-		/* Joint */
+		/* Lower arm */
 		meshes[2] = ProceduralMeshFactory.createCylinder(DEFAULT_SLICES,
 				DEFAULT_SLICES, true);
-		/* Upper arm */
+		/* Middle-Joint */
 		meshes[3] = ProceduralMeshFactory.createCylinder(DEFAULT_SLICES,
 				DEFAULT_SLICES, true);
+		/* Upper arm */
+		meshes[4] = ProceduralMeshFactory.createCylinder(DEFAULT_SLICES,
+				DEFAULT_SLICES, true);
 		/* Head */
-		meshes[4] = ProceduralMeshFactory.createCone(DEFAULT_SLICES, true);
+		meshes[5] = ProceduralMeshFactory.createCone(DEFAULT_SLICES, true);
 
 		spotLight = new Light(index, new float[] { 0.25f, 0f, -0.15f, 1f });
 		spotLight.makeSpotlight(new float[] { 2.5f, 0.0f, -0.5f, 1f }, 50f);
@@ -70,8 +73,8 @@ public class Lamp {
 
 	public Lamp(int index, Texture[] textures) {
 		this(index);
-		if (textures.length != 5) {
-			throw new IllegalArgumentException("Textures count not equal 5");
+		if (textures.length != 6) {
+			throw new IllegalArgumentException("Textures count not equal 6");
 		}
 		this.textures = textures;
 		this.showTextures = true;
@@ -79,10 +82,10 @@ public class Lamp {
 
 	public void render(GL2 gl) {
 		if (renders == null) {
-			renders = new Render[5];
-			for (int i = 0; i < 5; i++) {
+			renders = new Render[6];
+			for (int i = 0; i < 6; i++) {
 				/* If the renders are not initialised do it now */
-				renders[i] = (showTextures ? new Render(meshes[i], textures[0])
+				renders[i] = (showTextures ? new Render(meshes[i], textures[i])
 						: new Render(meshes[i]));
 			}
 		}
@@ -107,17 +110,34 @@ public class Lamp {
     		/* Draw base */ 
     		gl.glPushMatrix();
     			gl.glRotated(-90, 1.0, 0.0, 0.0);
-    			gl.glScaled(0.7,0.7,0.1);
+    			gl.glScaled(0.7,0.7,0.15);
     			renders[0].renderImmediateMode(gl, showTextures);
     		gl.glPopMatrix();
     		
-    		drawLowerArm(gl);	
+    		drawLowerJoint(gl);	
 	    gl.glPopMatrix();
+	}
+	
+	private void drawLowerJoint(GL2 gl) {
+    	gl.glPushMatrix();
+    		gl.glRotated(-20, 0.0, 0.0, 1.0);
+			gl.glTranslated(0, 0.15, 0);
+			
+    		animator.animateLowerJoint(gl);
+    	
+			/* Draw lower joint */
+    		gl.glPushMatrix();
+    			gl.glTranslated(0, 0, -0.15);
+				gl.glScaled(0.26,0.26,0.3);
+    			renders[1].renderImmediateMode(gl, showTextures);
+    		gl.glPopMatrix();
+    		
+			drawLowerArm(gl);	
+		gl.glPopMatrix();
 	}
 	
 	private void drawLowerArm(GL2 gl) {
     	gl.glPushMatrix();
-			gl.glRotated(-20, 0.0, 0.0, 1.0);
 			
     		animator.animateLowerArm(gl);
     	
@@ -125,24 +145,24 @@ public class Lamp {
     		gl.glPushMatrix();
     			gl.glRotated(-90, 1.0, 0.0, 0.0);
     			gl.glScaled(0.1,0.1,1.3);
-    			renders[1].renderImmediateMode(gl, showTextures);
+    			renders[2].renderImmediateMode(gl, showTextures);
     		gl.glPopMatrix();
     		
-			drawJoint(gl);	
+    		drawMiddleJoint(gl);	
 		gl.glPopMatrix();
 	}
 	
-	private void drawJoint(GL2 gl) {
+	private void drawMiddleJoint(GL2 gl) {
 		gl.glPushMatrix();
 			gl.glTranslated(0, 1.3, 0);
 			
-			animator.animateJoint(gl);
+			animator.animateMiddleJoint(gl);
 		
-			/* Draw joint */
+			/* Draw middle joint */
 			gl.glPushMatrix();
 				gl.glTranslated(0, 0, -0.075);
-				gl.glScaled(0.13,0.13,0.15);
-				renders[2].renderImmediateMode(gl, showTextures);
+				gl.glScaled(0.18,0.18,0.15);
+				renders[3].renderImmediateMode(gl, showTextures);
 			gl.glPopMatrix();
 			
 			drawUpperArm(gl);
@@ -159,7 +179,7 @@ public class Lamp {
 			gl.glPushMatrix();
 				gl.glRotated(-90, 1.0, 0.0, 0.0);
 				gl.glScaled(0.1,0.1,1.3);
-				renders[3].renderImmediateMode(gl, showTextures);
+				renders[4].renderImmediateMode(gl, showTextures);
 			gl.glPopMatrix();
 			
 			drawHead(gl);
@@ -176,7 +196,7 @@ public class Lamp {
 			gl.glPushMatrix();
 				gl.glRotated(90, 1.0, 0.0, 0.0);
 				gl.glScaled(0.5,0.5,0.5);
-				renders[4].renderImmediateMode(gl, showTextures);
+				renders[5].renderImmediateMode(gl, showTextures);
 			gl.glPopMatrix();
 			
 			drawBulb(gl);
