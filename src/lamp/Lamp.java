@@ -198,7 +198,7 @@ public class Lamp {
 			if (switchedOn) {
 				gl.glPushMatrix();
 					gl.glRotated(-25, 0.0, 1.0, 0.0);
-					spotLight.use(gl, glut, true);
+					spotLight.use(gl, glut, false);
 				gl.glPopMatrix();	
 			} else {
 				spotLight.disable(gl);
