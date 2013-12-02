@@ -21,6 +21,7 @@ import com.jogamp.opengl.util.texture.awt.*;
 import javax.media.opengl.glu.GLU;
 
 import lamp.Lamp;
+import lamp.LampAnimator;
 
 import com.jogamp.opengl.util.gl2.GLUT;
 
@@ -202,6 +203,14 @@ public class AssignmentScene {
 	 */
 	public void update() {
 		incRotate();
+	}
+	
+	public void setLampAnimator(LampAnimator animator) {
+		this.lamp.setAnimator(animator);
+	}
+	
+	public LampAnimator getLampAnimator() {
+		return this.lamp.getAnimator();
 	}
 
 	private void doLight(GL2 gl) {

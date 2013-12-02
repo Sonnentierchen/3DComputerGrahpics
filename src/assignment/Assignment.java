@@ -15,6 +15,9 @@ import com.jogamp.opengl.util.*;
 
 import javax.media.opengl.glu.GLU;
 
+import lamp.JumpLampAnimator;
+import lamp.NullLampAnimator;
+
 import com.jogamp.opengl.util.gl2.GLUT;
 
 public class Assignment extends Frame implements GLEventListener,
@@ -167,10 +170,19 @@ public class Assignment extends Frame implements GLEventListener,
 	}
 
 	private void setContinuousAnimation(boolean b) {
+		if (b) {
+			if (!(scene.getLampAnimator() instanceof JumpLampAnimator)) {
+				scene.setLampAnimator(new JumpLampAnimator());
+			}
+			scene.getLampAnimator().start();
+		} else {
+			scene.getLampAnimator().pause();
+		}
 		continuousAnimation = b;
 	}
 
 	private void reset() {
+		scene.setLampAnimator(new NullLampAnimator());
 		checkAxes.setState(true);
 		scene.getAxes().setSwitchedOn(true);
 		checkObjects.setState(true);

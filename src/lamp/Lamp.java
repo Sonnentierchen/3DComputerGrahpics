@@ -67,7 +67,7 @@ public class Lamp {
 		spotLight = new Light(index, new float[] { 0.25f, 0f, -0.15f, 1f });
 		spotLight.makeSpotlight(new float[] { 2.5f, 0.0f, -0.5f, 1f }, 50f);
 		switchedOn = true;
-		animator = new JumpLampAnimator();
+		animator = new NullLampAnimator();
 		animator.start();
 	}
 
@@ -78,6 +78,14 @@ public class Lamp {
 		}
 		this.textures = textures;
 		this.showTextures = true;
+	}
+	
+	public void setAnimator(LampAnimator animator) {
+		this.animator = animator;
+	}
+	
+	public LampAnimator getAnimator() {
+		return this.animator;
 	}
 
 	public void render(GL2 gl) {
