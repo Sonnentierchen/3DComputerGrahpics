@@ -216,6 +216,7 @@ public class Lamp {
 			gl.glTranslated(0, -0.5, 0);
 			gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, new float[]{1.0f,1.0f,1.0f}, 0);
 			gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, new float[]{1.0f,1.0f,1.0f}, 0);
+			gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, new float[] {1.0f, 1.0f, 1.0f, 1.0f}, 0);
 			gl.glRotated(-90, 0.0, 0.0, 1.0);
 			gl.glRotated(-90, 1.0, 0.0, 0.0);
 			gl.glTranslated(-0.1, 0, 0);
