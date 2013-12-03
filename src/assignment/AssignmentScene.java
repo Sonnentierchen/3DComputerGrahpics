@@ -10,6 +10,8 @@ import java.awt.image.*;
 
 import javax.imageio.*;
 
+import brick.Brick;
+
 import com.jogamp.opengl.util.awt.*;
 
 import javax.media.opengl.*;
@@ -31,29 +33,62 @@ public class AssignmentScene {
 	private GLUT glut = new GLUT();
 
 	private final double INC_ROTATE = 2.0;
+	private final double LAMP_INC = 0.13;
 
 	private double rotate = 0.0;
+	private double lampPeriod = 0.13;
+	private double currentLampRotation = 0.0;
 	private boolean objectsOn = true;
 
 	private int canvaswidth = 0, canvasheight = 0;
 
 	private Light light;
+	private Light illuminationLight;
 	private Camera camera;
+	private Axes axes;
+	private Lamp lamp;
+	
+	private Brick brickOne;
+	private Brick brickTwo;
+	private Brick brickThree;
+	private Brick brickFour;
+	private Brick brickFive;
+	private Brick brickSix;
+
 	private Mesh meshFloor;
 	private Mesh meshWallOne;
 	private Mesh meshWallTwo;
 	private Mesh meshWallThree;
 	private Mesh meshWallFour;
+	private Mesh meshBarrelOne;
+	private Mesh meshBarrelTwo;
+	private Mesh meshBarrelThree;
+	private Mesh meshBarrelFour;
+	private Mesh meshBarrelFive;
+
 	private Render floor;
 	private Render wallOne;
 	private Render wallTwo;
 	private Render wallThree;
 	private Render wallFour;
-	private Axes axes;
-	private Lamp lamp;
+	private Render barrelOne;
+	private Render barrelTwo;
+	private Render barrelThree;
+	private Render barrelFour;
+	private Render barrelFive;
 
-	// Use JOGL Texture class to deal with textures
-	private Texture bookTex, magTex;
+	private Texture floorTexture;
+	private Texture wallOneTexture;
+	private Texture wallTwoTexture;
+	private Texture wallThreeTexture;
+	private Texture wallFourTexture;
+	private Texture barrelOneTexture;
+	private Texture barrelTwoTexture;
+	private Texture barrelThreeTexture;
+	private Texture barrelFourTexture;
+	private Texture barrelFiveTexture;
+	private Texture lampTexture;
+	private Texture brickTexture;
 
 	/**
 	 * Constructor.
@@ -71,9 +106,11 @@ public class AssignmentScene {
 																					// default
 																					// light
 		light.makeDirectional();
+		illuminationLight = new Light(GL2.GL_LIGHT1, new float[] { 2.0f, 1.5f,
+				2.5f, 1.0f }, new float[] { 0.1f, 0.3f, 0.1f }, new float[] {
+				0.7f, 0.7f, 0.7f }, new float[] { 0.5f, 0.5f, 0.5f }, true);
 		this.camera = camera;
 		axes = new Axes(2.2, 1.8, 1.6);
-		lamp = new Lamp(GL2.GL_LIGHT1);
 		createRenderObjects(gl); // Create/load objects
 	}
 
@@ -81,31 +118,58 @@ public class AssignmentScene {
 
 		// Some of the objects will have textures applied, so load the relevant
 		// textures
-		bookTex = loadTexture(gl, "wood-texture.jpg");
+		floorTexture = loadTexture(gl, "floor.jpg");
+		wallOneTexture = loadTexture(gl, "wall1.jpg");
+		wallTwoTexture = loadTexture(gl, "wall2.jpg");
+		wallThreeTexture = loadTexture(gl, "wall3.jpg");
+		wallFourTexture = loadTexture(gl, "wall4.jpg");
+		barrelOneTexture = loadTexture(gl, "barrel_radioactive.jpg");
+		barrelTwoTexture = loadTexture(gl, "barrel_radioactive.jpg");
+		barrelThreeTexture = loadTexture(gl, "barrel_oil.jpg");
+		barrelFourTexture = loadTexture(gl, "barrel_oil.jpg");
+		barrelFiveTexture = loadTexture(gl, "barrel_explosive.jpg");
+		lampTexture = loadTexture(gl, "barrel_rust2.jpg");
+		brickTexture = loadTexture(gl, "brick_moss.jpg");
 
 		/* I declare that this code is my own work */
 		/* Author Florian Blume, fblume1@sheffield.ac.uk */
 
 		/* Create room meshes */
 		meshFloor = ProceduralMeshFactory.createPlane(10, 10, 100, 100, 1, 1);
-		meshWallOne = ProceduralMeshFactory.createPlane(10, 2.5, 100, 100, 1, 1);
-		meshWallTwo = ProceduralMeshFactory.createPlane(10, 2.5, 100, 100, 1, 1);
-		meshWallThree = ProceduralMeshFactory
-				.createPlane(10, 2.5, 30, 30, 1, 1);
-		meshWallFour = ProceduralMeshFactory.createPlane(10, 2.5, 30, 30, 1, 1);
+		meshWallOne = ProceduralMeshFactory.createPlane(10, 5, 100, 100, 1, 1);
+		meshWallTwo = ProceduralMeshFactory.createPlane(10, 5, 100, 100, 1, 1);
+		meshWallThree = ProceduralMeshFactory.createPlane(10, 5, 30, 30, 1, 1);
+		meshWallFour = ProceduralMeshFactory.createPlane(10, 5, 30, 30, 1, 1);
+		meshBarrelOne = ProceduralMeshFactory.createCylinder(30, 30, true);
+		meshBarrelTwo = ProceduralMeshFactory.createCylinder(30, 30, true);
+		meshBarrelThree = ProceduralMeshFactory.createCylinder(30, 30, true);
+		meshBarrelFour = ProceduralMeshFactory.createCylinder(30, 30, true);
+		meshBarrelFive = ProceduralMeshFactory.createCylinder(30, 30, true);
 
 		/* Create room renders */
-		floor = new Render(meshFloor, bookTex);
-		wallOne = new Render(meshWallOne, bookTex);
-		wallTwo = new Render(meshWallTwo, bookTex);
-		wallThree = new Render(meshWallThree, bookTex);
-		wallFour = new Render(meshWallFour, bookTex);
-
+		floor = new Render(meshFloor, floorTexture);
+		wallOne = new Render(meshWallOne, wallOneTexture);
+		wallTwo = new Render(meshWallTwo, wallTwoTexture);
+		wallThree = new Render(meshWallThree, wallThreeTexture);
+		wallFour = new Render(meshWallFour, wallFourTexture);
+		barrelOne = new Render(meshBarrelOne, barrelOneTexture);
+		barrelTwo = new Render(meshBarrelTwo, barrelTwoTexture);
+		barrelThree = new Render(meshBarrelThree, barrelThreeTexture);
+		barrelFour = new Render(meshBarrelFour, barrelFourTexture);
+		barrelFive = new Render(meshBarrelFive, barrelFiveTexture);
+		
 		floor.initialiseDisplayList(gl, true);
 		wallOne.initialiseDisplayList(gl, true);
 		wallTwo.initialiseDisplayList(gl, true);
 		wallThree.initialiseDisplayList(gl, true);
 		wallFour.initialiseDisplayList(gl, true);
+		brickOne = new Brick(brickTexture);
+		brickTwo = new Brick(brickTexture);
+		brickThree = new Brick(brickTexture);
+		brickFour = new Brick(brickTexture);
+		brickFive = new Brick(brickTexture);
+		brickSix = new Brick(brickTexture);
+		lamp = new Lamp(GL2.GL_LIGHT2, new Texture[] {lampTexture, lampTexture, lampTexture, lampTexture, lampTexture, lampTexture});
 		/* end of own code */
 	}
 
@@ -195,6 +259,10 @@ public class AssignmentScene {
 	 */
 	public void incRotate() {
 		rotate = (rotate + INC_ROTATE) % 360;
+		if (Math.sin(lampPeriod + Math.PI) - 0.7 > 0) {
+			currentLampRotation += Math.exp(-(Math.sin(LAMP_INC) + 1)) * 5;
+		}
+		lampPeriod += LAMP_INC;
 	}
 
 	/**
@@ -204,11 +272,11 @@ public class AssignmentScene {
 	public void update() {
 		incRotate();
 	}
-	
+
 	public void setLampAnimator(LampAnimator animator) {
 		this.lamp.setAnimator(animator);
 	}
-	
+
 	public LampAnimator getLampAnimator() {
 		return this.lamp.getAnimator();
 	}
@@ -220,6 +288,9 @@ public class AssignmentScene {
 			light.use(gl, glut, false);
 		} else
 			light.disable(gl);
+		gl.glPopMatrix();
+		gl.glPushMatrix();
+		illuminationLight.use(gl, glut, false);
 		gl.glPopMatrix();
 	}
 
@@ -245,33 +316,121 @@ public class AssignmentScene {
 
 			// Draw walls
 			gl.glPushMatrix();
-				gl.glTranslated(-5, 1.25, 0);
+				gl.glTranslated(-5, 2.5, 0);
 				gl.glRotated(90, 0, 1.0, 0);
 				gl.glRotated(90, 1.0, 0, 0);
 				wallOne.renderImmediateMode(gl, true);
 			gl.glPopMatrix();
 
 			gl.glPushMatrix();
-				gl.glTranslated(5, 1.25, 0);
+				gl.glTranslated(5, 2.5, 0);
 				gl.glRotated(90, 0, 1.0, 0);
 				gl.glRotated(-90, 1.0, 0, 0);
 				wallTwo.renderImmediateMode(gl, true);
 			gl.glPopMatrix();
 
 			gl.glPushMatrix();
-				gl.glTranslated(0, 1.25, -5);
+				gl.glTranslated(0, 2.5, -5);
 				gl.glRotated(90, 1.0, 0, 0);
 				wallThree.renderImmediateMode(gl, true);
 			gl.glPopMatrix();
 
 			gl.glPushMatrix();
-				gl.glTranslated(0, 1.25, 5);
+				gl.glTranslated(0, 2.5, 5);
+				gl.glRotated(180, 0, 0, 1.0);
 				gl.glRotated(-90, 1.0, 0, 0);
 				wallFour.renderImmediateMode(gl, true);
 			gl.glPopMatrix();
 
+			// Draw barrels
+			gl.glPushMatrix();
+				gl.glTranslated(4, 0, 3);
+				gl.glRotated(-90, 1.0, 0, 0);
+				gl.glScaled(1, 1, 1.5);
+				barrelOne.renderImmediateMode(gl, true);
+			gl.glPopMatrix();
+
+			gl.glPushMatrix();
+				gl.glTranslated(2.5, 0.5, 3);
+				//gl.glTranslated(0, 1, 0);
+				//gl.glRotated(180, 1.0, 0, 0);
+				//gl.glRotated(-90, 1.0, 0, 0);
+				gl.glScaled(1, 1, 1.5);
+				barrelTwo.renderImmediateMode(gl, true);
+			gl.glPopMatrix();
+			
+			gl.glPushMatrix();
+				gl.glTranslated(-2.7, 0.5, 2.3);
+				gl.glRotated(55, 0, 1.0, 0);
+				//gl.glTranslated(0, 1, 0);
+				//gl.glRotated(180, 1.0, 0, 0);
+				//gl.glRotated(-90, 1.0, 0, 0);
+				gl.glScaled(1, 1, 1.5);
+				barrelThree.renderImmediateMode(gl, true);
+			gl.glPopMatrix();
+			
+			gl.glPushMatrix();
+				gl.glTranslated(2.2, 1.5, -3.9);
+				gl.glRotated(90, 1.0, 0, 0);
+				//gl.glTranslated(0, 1, 0);
+				//gl.glRotated(180, 1.0, 0, 0);
+				//gl.glRotated(-90, 1.0, 0, 0);
+				gl.glScaled(1, 1, 1.5);
+				barrelFour.renderImmediateMode(gl, true);
+			gl.glPopMatrix();
+		
+			gl.glPushMatrix();
+				gl.glTranslated(3.3, 1.5, -4.3);
+				gl.glRotated(90, 1.0, 0, 0);
+				//gl.glTranslated(0, 1, 0);
+				//gl.glRotated(180, 1.0, 0, 0);
+				//gl.glRotated(-90, 1.0, 0, 0);
+				gl.glScaled(1, 1, 1.5);
+				barrelFive.renderImmediateMode(gl, true);
+			gl.glPopMatrix();
+			
+			gl.glPushMatrix();
+				gl.glTranslated(3, 0, -2);
+				gl.glRotated(15, 0, 1.0, 0);
+				brickOne.render(gl);
+			gl.glPopMatrix();
+			
+			gl.glPushMatrix();
+				gl.glTranslated(3.25, 0, -2.5);
+				gl.glRotated(-15, 0, 1.0, 0);
+				brickTwo.render(gl);
+			gl.glPopMatrix();
+			
+			gl.glPushMatrix();
+				gl.glTranslated(3.1, 0.2, -2.35);
+				gl.glRotated(120, 0, 1.0, 0);
+				brickThree.render(gl);
+			gl.glPopMatrix();
+
+			gl.glPushMatrix();
+				gl.glTranslated(2.2, 0, -2.9);
+				gl.glRotated(70, 0, 1.0, 0);
+				brickFour.render(gl);
+			gl.glPopMatrix();
+			
+			gl.glPushMatrix();
+				gl.glTranslated(3.7, 0, -3.7);
+				gl.glRotated(120, 0, 1.0, 0);
+				brickFive.render(gl);
+			gl.glPopMatrix();
+			
+			gl.glPushMatrix();
+				gl.glTranslated(3.8, 0, -2.2);
+				gl.glRotated(-50, 0, 1.0, 0);
+				brickSix.render(gl);
+			gl.glPopMatrix();
+			
 			// Draw lamp
-			lamp.render(gl);
+			gl.glPushMatrix();
+				gl.glRotated(-currentLampRotation, 0, 1.0, 0);
+				gl.glTranslated(0, 0, 2);
+				lamp.render(gl);
+			gl.glPopMatrix();
 		}
 	}
 

@@ -105,7 +105,7 @@ public class Lamp {
 	    gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, emission, 0);
 
 	    gl.glPushMatrix();
-	    	gl.glScaled(0.5,0.5,0.5);
+	    	gl.glScaled(0.7,0.7,0.7);
 	    	drawBase(gl);	
 	    gl.glPopMatrix();
 	}

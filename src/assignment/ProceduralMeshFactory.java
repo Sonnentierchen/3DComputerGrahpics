@@ -286,7 +286,8 @@ public class ProceduralMeshFactory {
 			slices = 3;
 
 		int r, z;
-		double s, c, angle, height, texu, texv;
+		double s, c, angle, height, texu, texv, texvLower;
+		double capTextureRadius = 0.12;
 		double stepz = 1.0 / (stacks - 1);
 		double stepr = 2.0 * Math.PI / slices;
 		int stackoffset = 0, lowerstack, trioffset = 0, trioffset2;
@@ -302,15 +303,17 @@ public class ProceduralMeshFactory {
 			s = Math.sin(angle = r * stepr) * 0.5;
 			c = Math.cos(angle) * 0.5;
 			vertices[r] = new Vertex(s, c, 0, 1.0 - (double) r / (slices - 1),
-					0.0); // need to run 1.0-0.0 in u
+					0.28); // need to run 1.0-0.0 in u
 							// because x and y axes are flipped in the
 							// coordinate system
 		}
 
 		for (z = 1; z < stacks; z++) {
-			vertices[stackoffset = z * slices] = new Vertex(
-					vertices[0].getPositionX(), vertices[0].getPositionY(),
-					height = z * stepz, 1.0, texv = (double) z / (stacks - 1));
+			height = z * stepz;
+			texv = (double) z / (stacks - 1) * 0.44 + 0.28;
+			stackoffset = z * slices;
+			vertices[stackoffset] = new Vertex(vertices[0].getPositionX(),
+					vertices[0].getPositionY(), height, 1.0, texv);
 			lowerstack = stackoffset - slices;
 
 			triangles[trioffset] = new Triangle(stackoffset, lowerstack,
@@ -334,31 +337,41 @@ public class ProceduralMeshFactory {
 		if (caps) { // when capping the cylinder the upper and lowermost ring of
 					// vertices are copied to create a hard edge at the top and
 					// bottom of the cylinder
-			int ep1, ep2;
+			int ep1 = vertices.length - 2;
+			int ep2 = vertices.length - 1;
+			texu = 0.12;
+			texv = 0.88;
+			texvLower = 0.12;
 
-			vertices[ep1 = vertices.length - 2] = new Vertex(0.0, 0.0, 0.0,
-					0.5, 0.5);
-			vertices[ep2 = vertices.length - 1] = new Vertex(0.0, 0.0, 1.0,
-					0.5, 0.5);
-			vertices[lowerstack = stacks * slices] = (Vertex) vertices[0]
+			vertices[ep1] = new Vertex(0.0, 0.0, 0.0, capTextureRadius, 0.12);
+			vertices[ep2] = new Vertex(0.0, 0.0, 1.0, capTextureRadius, 0.88);
+			lowerstack = stacks * slices;
+			vertices[lowerstack] = (Vertex) vertices[0].clone();
+			vertices[lowerstack].setTextureCoord(texu, texvLower
+					- capTextureRadius);
+			stackoffset = lowerstack + slices;
+			vertices[stackoffset] = (Vertex) vertices[stackoffset - 2 * slices]
 					.clone();
-			vertices[lowerstack].setTextureCoord(texu = 0.5, texv = 0.0);
-			vertices[stackoffset = lowerstack + slices] = (Vertex) vertices[stackoffset
-					- 2 * slices].clone();
-			vertices[stackoffset].setTextureCoord(texu, texv);
+			vertices[stackoffset]
+					.setTextureCoord(texu, texv - capTextureRadius);
 
 			triangles[trioffset] = new Triangle(ep1, lowerstack + slices - 1,
 					lowerstack);
 			triangles[trioffset2 = trioffset + slices] = new Triangle(
 					stackoffset, stackoffset + slices - 1, ep2);
 			for (r = 1; r < slices; r++) {
+				angle = r * stepr;
+				texu = 0.12 - Math.sin(angle) * capTextureRadius;
+				texv = 0.88 - Math.cos(angle) * capTextureRadius;
+				texvLower = 0.12 - Math.cos(angle) * capTextureRadius;
+
 				vertices[lowerstack + r] = (Vertex) vertices[r].clone();
-				vertices[lowerstack + r].setTextureCoord(
-						texu = 0.5 - Math.sin(angle = r * stepr) * 0.5,
-						texv = 0.5 - Math.cos(angle) * 0.5);
+				vertices[lowerstack + r].setTextureCoord(texu, texvLower);
+
 				vertices[stackoffset + r] = (Vertex) vertices[stackoffset - 2
 						* slices + r].clone();
-				vertices[stackoffset + r].setTextureCoord(1 - texu, texv);
+				vertices[stackoffset + r].setTextureCoord(texu, texv);
+
 				triangles[trioffset + r] = new Triangle(lowerstack + r - 1,
 						lowerstack + r, ep1);
 				triangles[trioffset2 + r] = new Triangle(stackoffset + r,
@@ -396,6 +409,7 @@ public class ProceduralMeshFactory {
 		int r, z;
 		double s, c, angle;
 		double stepr = 2.0 * Math.PI / slices;
+		double texDegree = 2.0 * Math.PI / slices;
 		int end_offset = slices;
 		// slices++;
 
@@ -407,22 +421,25 @@ public class ProceduralMeshFactory {
 			s = Math.sin(angle = r * stepr) * 0.23;
 			c = Math.cos(angle) * 0.23;
 			vertices[r] = new Vertex(s, c, 0, 1.0 - (double) r / (slices - 1),
-					0.0);
+					0.6);
 			vertices[r + 2 * end_offset] = new Vertex(s, c, 0, 1.0 - (double) r
-					/ (slices - 1), 0.0);
+					/ (slices - 1), 0.6);
 
 			s = Math.sin(angle = r * stepr) * 0.5;
 			c = Math.cos(angle) * 0.5;
 			vertices[r + end_offset] = new Vertex(s, c, 1.0, 1.0 - (double) r
-					/ (slices - 1), 1.0);
+					/ (slices - 1), 0.0);
 			vertices[r + 3 * end_offset] = new Vertex(s, c, 1.0, 1.0
-					- (double) r / (slices - 1), 1.0);
-
+					- (double) r / (slices - 1), 0.0);
+			/*
 			if (cap) {
+				double texu = 0.5 - Math.sin(r * texDegree) * 0.15;
+				double texv = 0.85 - Math.cos(r * texDegree) * 0.15;
+				System.out.println(texu + " texv:" + texv);
 				int cap_offset = 4 * end_offset;
-				vertices[r + cap_offset] = new Vertex(s, c, 0, 1.0
-						- (double) r / (slices - 1), 1.0);
+				vertices[r + cap_offset] = new Vertex(s, c, 0, 1 - texu, texv);
 			}
+			*/
 		}
 
 		for (z = 0; z < slices; z++) {
@@ -437,12 +454,37 @@ public class ProceduralMeshFactory {
 					* end_offset);
 		}
 
+		/*
+		 * if (cap) { vertices[vertices.length - 1] = new Vertex(0.0, 0.0, 0,
+		 * 0.5, 0.85); int cap_offset = 4 * end_offset; for (int i = 0; i <
+		 * slices; i++) { int next_index = (i + 1 < slices ? i + 1 : 0);
+		 * triangles[i + cap_offset] = new Triangle(i, next_index,
+		 * vertices.length - 1); } }
+		 */
+
 		if (cap) {
-			vertices[vertices.length - 1] = new Vertex(0.0, 0.0, 0, 0.5, 0.5);
-			int cap_offset = 4 * end_offset;
-			for (int i = 0; i < slices; i++) {
-				int next_index = (i + 1 < slices ? i + 1 : 0);
-				triangles[i + cap_offset] = new Triangle(i, next_index, vertices.length - 1);
+			int ep1 = vertices.length - 1;
+			double texu = 0.5;
+			double texv = 0.76;
+
+			vertices[ep1] = new Vertex(0.0, 0.0, 0.0, 0.5, 0.13);
+			int lowerstack = 4 * slices;
+			vertices[lowerstack] = (Vertex) vertices[0].clone();
+			vertices[lowerstack].setTextureCoord(texu, texv - 0.13);
+
+			int trioffset = 4 * slices;
+			triangles[trioffset] = new Triangle(ep1, lowerstack + slices - 1, lowerstack);
+			
+			for (r = 1; r < slices; r++) {
+				angle = r * stepr;
+				texu = 0.5 - Math.sin(angle) * 0.13;
+				texv = 0.86 - Math.cos(angle) * 0.13;
+
+				vertices[lowerstack + r] = (Vertex) vertices[r].clone();
+				vertices[lowerstack + r].setTextureCoord(texu, texv);
+
+				triangles[trioffset + r] = new Triangle(lowerstack + r - 1,
+						lowerstack + r, ep1);
 			}
 		}
 

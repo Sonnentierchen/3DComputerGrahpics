@@ -71,7 +71,7 @@ public class JumpLampAnimator implements LampAnimator {
 		double bendingAngle = Math.sin(sinusDegree);
 		gl.glRotated(bendingAngle * 30 - 20, 0, 0, 1.0);
 		if (started) {
-			sinusDegree += 0.06;
+			sinusDegree += 0.13;
 		}
 	}
 
