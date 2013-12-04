@@ -286,8 +286,8 @@ public class ProceduralMeshFactory {
 			slices = 3;
 
 		int r, z;
-		double s, c, angle, height, texu, texv, texvLower;
-		double capTextureRadius = 0.12;
+		double s, c, angle, height, texu, texv, texuLower;
+		double capTextureRadius = 0.25;
 		double stepz = 1.0 / (stacks - 1);
 		double stepr = 2.0 * Math.PI / slices;
 		int stackoffset = 0, lowerstack, trioffset = 0, trioffset2;
@@ -303,14 +303,14 @@ public class ProceduralMeshFactory {
 			s = Math.sin(angle = r * stepr) * 0.5;
 			c = Math.cos(angle) * 0.5;
 			vertices[r] = new Vertex(s, c, 0, 1.0 - (double) r / (slices - 1),
-					0.28); // need to run 1.0-0.0 in u
+					0.0); // need to run 1.0-0.0 in u
 							// because x and y axes are flipped in the
 							// coordinate system
 		}
 
 		for (z = 1; z < stacks; z++) {
 			height = z * stepz;
-			texv = (double) z / (stacks - 1) * 0.44 + 0.28;
+			texv = (double) z / (stacks - 1) * 0.5;
 			stackoffset = z * slices;
 			vertices[stackoffset] = new Vertex(vertices[0].getPositionX(),
 					vertices[0].getPositionY(), height, 1.0, texv);
@@ -339,16 +339,15 @@ public class ProceduralMeshFactory {
 					// bottom of the cylinder
 			int ep1 = vertices.length - 2;
 			int ep2 = vertices.length - 1;
-			texu = 0.12;
-			texv = 0.88;
-			texvLower = 0.12;
+			texu = 0.25;
+			texuLower = 0.75;
+			texv = 0.75;
 
-			vertices[ep1] = new Vertex(0.0, 0.0, 0.0, capTextureRadius, 0.12);
-			vertices[ep2] = new Vertex(0.0, 0.0, 1.0, capTextureRadius, 0.88);
+			vertices[ep1] = new Vertex(0.0, 0.0, 0.0, texuLower, 0.75);
+			vertices[ep2] = new Vertex(0.0, 0.0, 1.0, texu, 0.75);
 			lowerstack = stacks * slices;
 			vertices[lowerstack] = (Vertex) vertices[0].clone();
-			vertices[lowerstack].setTextureCoord(texu, texvLower
-					- capTextureRadius);
+			vertices[lowerstack].setTextureCoord(texuLower, texv - capTextureRadius);
 			stackoffset = lowerstack + slices;
 			vertices[stackoffset] = (Vertex) vertices[stackoffset - 2 * slices]
 					.clone();
@@ -361,12 +360,12 @@ public class ProceduralMeshFactory {
 					stackoffset, stackoffset + slices - 1, ep2);
 			for (r = 1; r < slices; r++) {
 				angle = r * stepr;
-				texu = 0.12 - Math.sin(angle) * capTextureRadius;
-				texv = 0.88 - Math.cos(angle) * capTextureRadius;
-				texvLower = 0.12 - Math.cos(angle) * capTextureRadius;
+				texu = 0.25 - Math.sin(angle) * capTextureRadius;
+				texuLower = 0.75 - Math.sin(angle) * capTextureRadius;
+				texv = 0.75 - Math.cos(angle) * capTextureRadius;
 
 				vertices[lowerstack + r] = (Vertex) vertices[r].clone();
-				vertices[lowerstack + r].setTextureCoord(texu, texvLower);
+				vertices[lowerstack + r].setTextureCoord(texuLower, texv);
 
 				vertices[stackoffset + r] = (Vertex) vertices[stackoffset - 2
 						* slices + r].clone();
@@ -409,7 +408,6 @@ public class ProceduralMeshFactory {
 		int r, z;
 		double s, c, angle;
 		double stepr = 2.0 * Math.PI / slices;
-		double texDegree = 2.0 * Math.PI / slices;
 		int end_offset = slices;
 		// slices++;
 
@@ -467,7 +465,7 @@ public class ProceduralMeshFactory {
 			double texu = 0.5;
 			double texv = 0.76;
 
-			vertices[ep1] = new Vertex(0.0, 0.0, 0.0, 0.5, 0.13);
+			vertices[ep1] = new Vertex(0.0, 0.0, 0.0, 0.5, 0.76);
 			int lowerstack = 4 * slices;
 			vertices[lowerstack] = (Vertex) vertices[0].clone();
 			vertices[lowerstack].setTextureCoord(texu, texv - 0.13);
@@ -478,7 +476,7 @@ public class ProceduralMeshFactory {
 			for (r = 1; r < slices; r++) {
 				angle = r * stepr;
 				texu = 0.5 - Math.sin(angle) * 0.13;
-				texv = 0.86 - Math.cos(angle) * 0.13;
+				texv = 0.76 - Math.cos(angle) * 0.13;
 
 				vertices[lowerstack + r] = (Vertex) vertices[r].clone();
 				vertices[lowerstack + r].setTextureCoord(texu, texv);
