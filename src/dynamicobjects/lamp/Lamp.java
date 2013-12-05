@@ -1,248 +1,145 @@
-/* I declare that this code is my own work */
-/* Author Florian Blume, fblume1@sheffield.ac.uk */
-
 package dynamicobjects.lamp;
 
 import javax.media.opengl.GL2;
 
 import assignment.Light;
+import assignment.Material;
 import assignment.Mesh;
 import assignment.ProceduralMeshFactory;
-import assignment.Render;
 
-import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
+
+import object.DynamicRender;
+import object.GlutSphereObjectPart;
+import object.LightObjectPart;
+import object.MeshObjectPart;
+import object.ObjectPart;
+import object.SceneObject;
+import object.modification.Modification;
+import object.modification.RotateModification;
+import object.modification.ScaleModification;
+import object.modification.TranslateModification;
 
 public class Lamp {
 
-	/* The following code is partly copied from Dr. Steve Maddock */
-	public static final float[] DEFAULT_DIFFUSE = { 1.0f, 1.0f, 1.0f };
-	public static final float[] DEFAULT_AMBIENT = { 0.1f, 0.1f, 0.1f };
+	private DynamicRender render;
 
-	public static final int DEFAULT_SLICES = 35;
-
-	private float[] ambient;
-	private float[] diffuse;
-	private float[] specular;
-	private float[] shininess = { 16.0f };
-	private float[] emission = { 0.0f, 0.0f, 0.0f, 1.0f };
-	/* End of copy */
-
-	private boolean switchedOn = true;
-	private boolean showTextures = false;
-	private Texture[] textures = new Texture[6];
-	private Mesh[] meshes = new Mesh[6];
-	private Render[] renders;
-	private Light spotLight;
-	private LampAnimator animator;
-	private GLUT glut = new GLUT();
-
-	public Lamp(int index) {
-		this(index, DEFAULT_AMBIENT, DEFAULT_DIFFUSE, DEFAULT_DIFFUSE);
-	}
-
-	public Lamp(int index, float[] ambient, float[] diffuse, float[] specular) {
-		this.ambient = ambient.clone();
-		this.diffuse = diffuse.clone();
-		this.specular = specular.clone();
-
-		/* Base */
-		meshes[0] = ProceduralMeshFactory.createCylinder(DEFAULT_SLICES,
-				DEFAULT_SLICES, true);
-		/* Base-joint */
-		meshes[1] = ProceduralMeshFactory.createCylinder(DEFAULT_SLICES,
-				DEFAULT_SLICES, true);
-		/* Lower arm */
-		meshes[2] = ProceduralMeshFactory.createCylinder(DEFAULT_SLICES,
-				DEFAULT_SLICES, true);
-		/* Middle-Joint */
-		meshes[3] = ProceduralMeshFactory.createCylinder(DEFAULT_SLICES,
-				DEFAULT_SLICES, true);
-		/* Upper arm */
-		meshes[4] = ProceduralMeshFactory.createCylinder(DEFAULT_SLICES,
-				DEFAULT_SLICES, true);
-		/* Head */
-		meshes[5] = ProceduralMeshFactory.createCone(DEFAULT_SLICES, true);
-
-		spotLight = new Light(index, new float[] { 0.25f, 0f, -0.15f, 1f });
-		spotLight.makeSpotlight(new float[] { 2.5f, 0.0f, -0.5f, 1f }, 50f);
-		switchedOn = true;
-		animator = NullLampAnimator.getInstance();
-		animator.start();
-	}
-
-	public Lamp(int index, Texture[] textures) {
-		this(index);
+	public Lamp(int index, Texture[] textures, int slices, int stacks) {
 		if (textures.length != 6) {
 			throw new IllegalArgumentException("Textures count not equal 6");
 		}
-		this.textures = textures;
-		this.showTextures = true;
-	}
-	
-	public void setAnimator(LampAnimator animator) {
-		this.animator = animator;
-	}
-	
-	public LampAnimator getAnimator() {
-		return this.animator;
+
+		// base
+		Mesh baseMesh = ProceduralMeshFactory.createCylinder(slices, stacks,
+				true);
+		Modification baseRotate = new RotateModification(-90, 1.0, 0, 0);
+		Modification baseScale = new ScaleModification(0.7, 0.7, 0.15);
+		ObjectPart base = new MeshObjectPart(baseMesh, textures[0],
+				new Modification[] { baseRotate, baseScale },
+				new Modification[0]);
+
+		// lower joint
+		Mesh lowerJointMesh = ProceduralMeshFactory.createCylinder(slices,
+				stacks, true);
+		Modification lowerJointTranslate = new TranslateModification(0, 0,
+				-0.15);
+		Modification lowerJointScale = new ScaleModification(0.26, 0.26, 0.3);
+		Modification lowerJointGlobalRotate = new RotateModification(-20, 0, 0,
+				1.0);
+		Modification lowerJointGlobalTranslate = new TranslateModification(0,
+				0.15, 0);
+		ObjectPart lowerJoint = new MeshObjectPart(lowerJointMesh, textures[1],
+				new Modification[] { lowerJointTranslate, lowerJointScale },
+				new Modification[] { lowerJointGlobalRotate,
+						lowerJointGlobalTranslate });
+
+		// lower arm
+		Mesh lowerArmMesh = ProceduralMeshFactory.createCylinder(slices,
+				stacks, true);
+		Modification lowerArmRotate = new RotateModification(-90, 1.0, 0, 0);
+		Modification lowerArmScale = new ScaleModification(0.1, 0.1, 1.3);
+		ObjectPart lowerArm = new MeshObjectPart(lowerArmMesh, textures[2],
+				new Modification[] { lowerArmRotate, lowerArmScale },
+				new Modification[0]);
+
+		// upper joint
+		Mesh upperJointMesh = ProceduralMeshFactory.createCylinder(slices,
+				stacks, true);
+		Modification upperJointTranslate = new TranslateModification(0, 0,
+				-0.075);
+		Modification upperJointScale = new ScaleModification(0.18, 0.18, 0.15);
+		Modification upperJointGlobalTranslate = new TranslateModification(0,
+				1.3, 0);
+		ObjectPart upperJoint = new MeshObjectPart(upperJointMesh, textures[3],
+				new Modification[] { upperJointTranslate, upperJointScale },
+				new Modification[] { upperJointGlobalTranslate });
+
+		// upper arm
+		Mesh upperArmMesh = ProceduralMeshFactory.createCylinder(slices,
+				stacks, true);
+		Modification upperArmRotate = new RotateModification(-90, 1.0, 0, 0);
+		Modification upperArmScale = new ScaleModification(0.1, 0.1, 1.3);
+		Modification upperArmGlobalRotate = new RotateModification(40, 0, 0,
+				1.0);
+		ObjectPart upperArm = new MeshObjectPart(upperArmMesh, textures[4],
+				new Modification[] { upperArmRotate, upperArmScale },
+				new Modification[] { upperArmGlobalRotate });
+
+		// head
+		Mesh headMesh = ProceduralMeshFactory.createCone(slices, true);
+		Modification headRotate = new RotateModification(90, 1.0, 0, 0);
+		Modification headScale = new ScaleModification(0.5, 0.5, 0.5);
+		Modification headGlobalTranslate = new TranslateModification(0.1, 1.28,
+				0);
+		Modification headGlobalRotate = new RotateModification(-85, 0, 0, 1.0);
+		ObjectPart head = new MeshObjectPart(headMesh, textures[4],
+				new Modification[] { headRotate, headScale },
+				new Modification[] { headGlobalTranslate, headGlobalRotate });
+
+		// head light
+		Light light = new Light(index, new float[] { 0.25f, 0f, -0.15f, 1f });
+		light.makeSpotlight(new float[] { 2.5f, 0.0f, -0.5f, 1f }, 50f);
+		Modification lightTranslateOne = new TranslateModification(0, -0.5, 0);
+		Modification lightRotateOne = new RotateModification(-90, 0, 0, 1.0);
+		Modification lightRotateTwo = new RotateModification(-90, 1.0, 0, 0);
+		Modification lightTranslateTwo = new TranslateModification(-0.1, 0, 0);
+		Modification lightPrivateRotateThree = new RotateModification(-25, 0,
+				1.0, 0);
+		ObjectPart lightPart = new LightObjectPart(light,
+				new Modification[] { lightPrivateRotateThree },
+				new Modification[] { lightTranslateOne, lightRotateOne,
+						lightRotateTwo, lightTranslateTwo });
+
+		// bulb
+		Modification bulbScaleOne = new ScaleModification(1.1, 1.1, 1.1);
+		Modification bulbScaleTwo = new ScaleModification(0.5, 1.0, 1.0);
+		Material material = new Material();
+		float[] matAmbientDiffuse = { 0.1f, 0.1f, 0.1f, 1.0f };
+		float[] matSpecular = { 0.0f, 0.0f, 0.0f, 0.0f };
+		float[] matShininess = { 1.0f };
+		float[] matEmission = { 0.9f, 0.9f, 0.9f, 1.0f };
+		material.setAmbient(matAmbientDiffuse);
+		material.setSpecular(matSpecular);
+		material.setShininess(matShininess[0]);
+		material.setEmission(matEmission);
+		GlutSphereObjectPart bulb = new GlutSphereObjectPart(material,
+				new Modification[] { bulbScaleOne, bulbScaleTwo },
+				new Modification[0]);
+
+		// stack together
+		lightPart.addSubPart(bulb);
+		head.addSubPart(lightPart);
+		upperArm.addSubPart(head);
+		upperJoint.addSubPart(upperArm);
+		lowerArm.addSubPart(upperJoint);
+		lowerJoint.addSubPart(lowerArm);
+		base.addSubPart(lowerJoint);
+		SceneObject sceneObject = new SceneObject(new ObjectPart[] { base });
+		render = new DynamicRender(sceneObject, new NullLampAnimator());
 	}
 
 	public void render(GL2 gl) {
-		if (renders == null) {
-			renders = new Render[6];
-			for (int i = 0; i < 6; i++) {
-				/* If the renders are not initialised do it now */
-				renders[i] = (showTextures ? new Render(meshes[i], textures[i])
-						: new Render(meshes[i]));
-			}
-		}
-
-		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);
-		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
-	    gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
-	    gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SHININESS, shininess, 0);
-	    gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, emission, 0);
-
-	    gl.glPushMatrix();
-	    	gl.glScaled(0.7,0.7,0.7);
-	    	drawBase(gl);	
-	    gl.glPopMatrix();
-	}
-	
-	private void drawBase(GL2 gl) {
-    	gl.glPushMatrix();
-    	
-    		animator.animateBase(gl);
-    	
-    		/* Draw base */ 
-    		gl.glPushMatrix();
-    			gl.glRotated(-90, 1.0, 0.0, 0.0);
-    			gl.glScaled(0.7,0.7,0.15);
-    			renders[0].renderImmediateMode(gl, showTextures);
-    		gl.glPopMatrix();
-    		
-    		drawLowerJoint(gl);	
-	    gl.glPopMatrix();
-	}
-	
-	private void drawLowerJoint(GL2 gl) {
-    	gl.glPushMatrix();
-    		gl.glRotated(-20, 0.0, 0.0, 1.0);
-			gl.glTranslated(0, 0.15, 0);
-			
-    		animator.animateLowerJoint(gl);
-    	
-			/* Draw lower joint */
-    		gl.glPushMatrix();
-    			gl.glTranslated(0, 0, -0.15);
-				gl.glScaled(0.26,0.26,0.3);
-    			renders[1].renderImmediateMode(gl, showTextures);
-    		gl.glPopMatrix();
-    		
-			drawLowerArm(gl);	
-		gl.glPopMatrix();
-	}
-	
-	private void drawLowerArm(GL2 gl) {
-    	gl.glPushMatrix();
-			
-    		animator.animateLowerArm(gl);
-    	
-			/* Draw lower arm */
-    		gl.glPushMatrix();
-    			gl.glRotated(-90, 1.0, 0.0, 0.0);
-    			gl.glScaled(0.1,0.1,1.3);
-    			renders[2].renderImmediateMode(gl, showTextures);
-    		gl.glPopMatrix();
-    		
-    		drawMiddleJoint(gl);	
-		gl.glPopMatrix();
-	}
-	
-	private void drawMiddleJoint(GL2 gl) {
-		gl.glPushMatrix();
-			gl.glTranslated(0, 1.3, 0);
-			
-			animator.animateMiddleJoint(gl);
-		
-			/* Draw middle joint */
-			gl.glPushMatrix();
-				gl.glTranslated(0, 0, -0.075);
-				gl.glScaled(0.18,0.18,0.15);
-				renders[3].renderImmediateMode(gl, showTextures);
-			gl.glPopMatrix();
-			
-			drawUpperArm(gl);
-		gl.glPopMatrix();
-	}
-	
-	private void drawUpperArm(GL2 gl) {
-		gl.glPushMatrix();
-			gl.glRotated(40, 0.0, 0.0, 1.0);
-			
-			animator.animateUpperArm(gl);
-			
-			/* Draw upper arm */
-			gl.glPushMatrix();
-				gl.glRotated(-90, 1.0, 0.0, 0.0);
-				gl.glScaled(0.1,0.1,1.3);
-				renders[4].renderImmediateMode(gl, showTextures);
-			gl.glPopMatrix();
-			
-			drawHead(gl);
-		gl.glPopMatrix();
-	}
-	
-	private void drawHead(GL2 gl) {
-		gl.glPushMatrix();
-			gl.glTranslated(0.1, 1.28, 0);
-			gl.glRotated(-85, 0.0, 0.0, 1.0);
-			
-			animator.animateHead(gl);
-			
-			gl.glPushMatrix();
-				gl.glRotated(90, 1.0, 0.0, 0.0);
-				gl.glScaled(0.5,0.5,0.5);
-				renders[5].renderImmediateMode(gl, showTextures);
-			gl.glPopMatrix();
-			
-			drawBulb(gl);
-		gl.glPopMatrix();
-	}
-	
-	private void drawBulb(GL2 gl) {
-		gl.glPushMatrix();
-			gl.glTranslated(0, -0.5, 0);
-			gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, new float[]{1.0f,1.0f,1.0f}, 0);
-			gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, new float[]{1.0f,1.0f,1.0f}, 0);
-			gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, new float[] {1.0f, 1.0f, 1.0f, 1.0f}, 0);
-			gl.glRotated(-90, 0.0, 0.0, 1.0);
-			gl.glRotated(-90, 1.0, 0.0, 0.0);
-			gl.glTranslated(-0.1, 0, 0);
-			gl.glScaled(1.1, 1.1, 1.1);
-			gl.glScaled(0.5, 1.0, 1.0);
-			glut.glutSolidSphere(0.20, DEFAULT_SLICES, DEFAULT_SLICES);
-			
-			if (switchedOn) {
-				gl.glPushMatrix();
-					gl.glRotated(-25, 0.0, 1.0, 0.0);
-					spotLight.use(gl, glut, false);
-				gl.glPopMatrix();	
-			} else {
-				spotLight.disable(gl);
-			}
-		gl.glPopMatrix();	
-	}
-
-	public void switchOn() {
-		switchedOn = true;
-	}
-
-	public void switchOff() {
-		switchedOn = false;
+		render.render(gl);
 	}
 
 }
-
-/* End of declaration */

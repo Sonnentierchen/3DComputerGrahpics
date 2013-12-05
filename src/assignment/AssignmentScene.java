@@ -25,7 +25,6 @@ import com.jogamp.opengl.util.texture.awt.*;
 import javax.media.opengl.glu.GLU;
 
 import dynamicobjects.lamp.Lamp;
-import dynamicobjects.lamp.Lamp2;
 import dynamicobjects.lamp.LampAnimator;
 
 import com.jogamp.opengl.util.gl2.GLUT;
@@ -37,6 +36,8 @@ public class AssignmentScene {
 
 	private final double INC_ROTATE = 2.0;
 	private final double LAMP_INC = 0.13;
+	
+	private final String TEXTURE_FOLDER = "textures\\";
 
 	private double rotate = 0.0;
 	private double lampPeriod = 0.13;
@@ -49,7 +50,7 @@ public class AssignmentScene {
 	private Light illuminationLight;
 	private Camera camera;
 	private Axes axes;
-	private Lamp2 lamp;
+	private Lamp lamp;
 
 	private Brick brickOne;
 	private Brick brickTwo;
@@ -110,20 +111,20 @@ public class AssignmentScene {
 
 		// Some of the objects will have textures applied, so load the relevant
 		// textures
-		floorTexture = loadTexture(gl, "floor.jpg");
-		wallOneTexture = loadTexture(gl, "wall1.jpg");
-		wallTwoTexture = loadTexture(gl, "wall2.jpg");
-		wallThreeTexture = loadTexture(gl, "wall3.jpg");
-		wallFourTexture = loadTexture(gl, "wall4.jpg");
-		barrelOneTexture = loadTexture(gl, "barrel_shell.jpg");
-		barrelTwoTexture = loadTexture(gl, "barrel_rusty_red.jpg");
-		barrelThreeTexture = loadTexture(gl, "barrel_explosive.jpg");
-		barrelFourTexture = loadTexture(gl, "barrel_grey.jpg");
-		barrelFiveTexture = loadTexture(gl, "barrel_explosive.jpg");
-		barrelSixTexture = loadTexture(gl, "barrel_radioactive.jpg");
-		lampTopTexture = loadTexture(gl, "lamp_top.jpg");
-		lampTexture = loadTexture(gl, "lamp_body.jpg");
-		brickTexture = loadTexture(gl, "brick.jpg");
+		floorTexture = loadTexture(gl, TEXTURE_FOLDER + "floor.jpg");
+		wallOneTexture = loadTexture(gl, TEXTURE_FOLDER + "wall1.jpg");
+		wallTwoTexture = loadTexture(gl, TEXTURE_FOLDER + "wall2.jpg");
+		wallThreeTexture = loadTexture(gl, TEXTURE_FOLDER + "wall3.jpg");
+		wallFourTexture = loadTexture(gl, TEXTURE_FOLDER + "wall4.jpg");
+		barrelOneTexture = loadTexture(gl, TEXTURE_FOLDER + "barrel_shell.jpg");
+		barrelTwoTexture = loadTexture(gl, TEXTURE_FOLDER + "barrel_rusty_red.jpg");
+		barrelThreeTexture = loadTexture(gl, TEXTURE_FOLDER + "barrel_explosive.jpg");
+		barrelFourTexture = loadTexture(gl, TEXTURE_FOLDER + "barrel_grey.jpg");
+		barrelFiveTexture = loadTexture(gl, TEXTURE_FOLDER + "barrel_explosive.jpg");
+		barrelSixTexture = loadTexture(gl, TEXTURE_FOLDER + "barrel_radioactive.jpg");
+		lampTopTexture = loadTexture(gl, TEXTURE_FOLDER + "lamp_top.jpg");
+		lampTexture = loadTexture(gl, TEXTURE_FOLDER + "lamp_body.jpg");
+		brickTexture = loadTexture(gl, TEXTURE_FOLDER + "brick.jpg");
 
 		room = new Room(new Texture[] { floorTexture, wallOneTexture,
 				wallTwoTexture, wallThreeTexture, wallFourTexture }, 8, 10,
@@ -143,7 +144,7 @@ public class AssignmentScene {
 		barrelFive = new Barrel(barrelFiveTexture, 30, 30);
 		barrelSix = new Barrel(barrelSixTexture, 30, 30);
 
-		lamp = new Lamp2(GL2.GL_LIGHT2,
+		lamp = new Lamp(GL2.GL_LIGHT2,
 				new Texture[] { lampTexture, lampTexture, lampTexture,
 				lampTexture, lampTexture, lampTopTexture }, 30, 30);
 		/* end of own code */

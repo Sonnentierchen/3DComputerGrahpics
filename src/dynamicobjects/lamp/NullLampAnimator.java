@@ -1,73 +1,38 @@
 package dynamicobjects.lamp;
 
-import javax.media.opengl.GL2;
+import java.util.Iterator;
+import java.util.LinkedList;
 
-public class NullLampAnimator implements LampAnimator {
+import object.animation.AnimationStep;
+import object.animation.Animator;
+import object.modification.Modification;
+
+public class NullLampAnimator implements Animator {
 	
-	private static LampAnimator instance;
+	private LinkedList<AnimationStep> animationSteps;
 	
-	private NullLampAnimator() {	
-	}
-	
-	public static LampAnimator getInstance() {
-		if (instance == null) {
-			instance = new NullLampAnimator();
+	public NullLampAnimator() {
+		animationSteps = new LinkedList<AnimationStep>();
+		for (int i = 0; i < 6; i++) {
+			animationSteps.add(new AnimationStep(new Modification[0]));
 		}
-		return instance;
+	}
+
+	@Override
+	public Iterator<AnimationStep> getAnimationStepIterator() {
+		return animationSteps.iterator();
 	}
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
-	public void stop() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void animateBase(GL2 gl) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void animateLowerJoint(GL2 gl) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void animateLowerArm(GL2 gl) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void animateMiddleJoint(GL2 gl) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void animateUpperArm(GL2 gl) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void animateHead(GL2 gl) {
-		// TODO Auto-generated method stub
-
+	public void reset() {
 	}
 
 }
