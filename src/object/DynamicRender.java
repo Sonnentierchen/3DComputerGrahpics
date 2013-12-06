@@ -79,7 +79,6 @@ public class DynamicRender extends SceneObjectRender {
 	}
 
 	public void pauseAnimation() {
-		this.running = false;
 		this.animator.pause();
 	}
 	
@@ -93,6 +92,10 @@ public class DynamicRender extends SceneObjectRender {
 	
 	public Animator getAnimator() {
 		return this.animator;
+	}
+	
+	public void setAnimationSpeed(double speed) {
+		this.animator.setAnimationSpeed(speed);
 	}
 
 }

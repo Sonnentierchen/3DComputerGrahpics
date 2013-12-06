@@ -6,10 +6,13 @@ package assignment;
  */
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 import java.awt.image.*;
 
 import javax.imageio.*;
 
+import object.TexturedObject;
 import object.staticobjects.Barrel;
 import object.staticobjects.Brick;
 import object.staticobjects.Room;
@@ -24,8 +27,11 @@ import com.jogamp.opengl.util.texture.awt.*;
 
 import javax.media.opengl.glu.GLU;
 
+import object.dynamicobjects.dynamicbarrel.DynamicBarrel;
+import object.dynamicobjects.lamp.BasicJumpLampAnimator;
+import object.dynamicobjects.lamp.JumpLampAnimator;
 import object.dynamicobjects.lamp.Lamp;
-import object.dynamicobjects.lamp.LampAnimator;
+import object.animation.Animator;
 
 import com.jogamp.opengl.util.gl2.GLUT;
 
@@ -34,14 +40,15 @@ public class AssignmentScene {
 	private GLU glu = new GLU();
 	private GLUT glut = new GLUT();
 
-	private final double INC_ROTATE = 2.0;
 	private final double LAMP_INC = 0.13;
+	private double lampSpeed = 1.0;
+	private double lampRotate = 0.0;
+	private double currentLampRotate = 0.0;
+	private double lampJumpHeight = 1.0;
+	private double lampJumpCompensation = 0.0;
 	
 	private final String TEXTURE_FOLDER = "textures\\";
 
-	private double rotate = 0.0;
-	private double lampPeriod = 0.13;
-	private double currentLampRotation = 0.0;
 	private boolean objectsOn = true;
 
 	private int canvaswidth = 0, canvasheight = 0;
@@ -51,6 +58,7 @@ public class AssignmentScene {
 	private Camera camera;
 	private Axes axes;
 	private Lamp lamp;
+	private Animator lampAnimator;
 
 	private Brick brickOne;
 	private Brick brickTwo;
@@ -61,7 +69,7 @@ public class AssignmentScene {
 
 	private Barrel barrelOne;
 	private Barrel barrelTwo;
-	private Barrel barrelThree;
+	private DynamicBarrel barrelThree;
 	private Barrel barrelFour;
 	private Barrel barrelFive;
 	private Barrel barrelSix;
@@ -82,6 +90,8 @@ public class AssignmentScene {
 	private Texture lampTopTexture;
 	private Texture lampTexture;
 	private Texture brickTexture;
+	
+	private List<TexturedObject> texturedObjects = new LinkedList<TexturedObject>();
 
 	/**
 	 * Constructor.
@@ -139,7 +149,8 @@ public class AssignmentScene {
 
 		barrelOne = new Barrel(barrelOneTexture, 30, 30);
 		barrelTwo = new Barrel(barrelTwoTexture, 30, 30);
-		barrelThree = new Barrel(barrelThreeTexture, 30, 30);
+		barrelThree = new DynamicBarrel(barrelThreeTexture, 30, 30);
+		barrelThree.setAnimationSpeed(2.0);
 		barrelFour = new Barrel(barrelFourTexture, 30, 30);
 		barrelFive = new Barrel(barrelFiveTexture, 30, 30);
 		barrelSix = new Barrel(barrelSixTexture, 30, 30);
@@ -147,7 +158,25 @@ public class AssignmentScene {
 		lamp = new Lamp(GL2.GL_LIGHT2,
 				new Texture[] { lampTexture, lampTexture, lampTexture,
 				lampTexture, lampTexture, lampTopTexture }, 30, 30);
-		lamp.startAnimation();
+		lampAnimator = new JumpLampAnimator();
+		lamp.setAnimator(lampAnimator);
+		
+		texturedObjects.add(room);
+		texturedObjects.add(brickOne);
+		texturedObjects.add(brickTwo);
+		texturedObjects.add(brickThree);
+		texturedObjects.add(brickFour);
+		texturedObjects.add(brickFive);
+		texturedObjects.add(brickSix);
+
+		texturedObjects.add(barrelOne);
+		texturedObjects.add(barrelTwo);
+		texturedObjects.add(barrelThree);
+		texturedObjects.add(barrelFour);
+		texturedObjects.add(barrelFive);
+		texturedObjects.add(barrelSix);
+		
+		texturedObjects.add(lamp);
 		/* end of own code */
 	}
 
@@ -155,7 +184,8 @@ public class AssignmentScene {
 		Texture tex = null;
 		// since file loading is involved, must use try...catch
 		try {
-			File f = new File(filename);
+			File f = new File("textures\\placeholder.jpg");
+			//File f = new File(filename);
 
 			// The following line results in a texture that is flipped
 			// vertically (i.e. is upside down)
@@ -189,17 +219,6 @@ public class AssignmentScene {
 	}
 
 	/**
-	 * Method used from the GUI to control whether or not all the objects are
-	 * displayed
-	 * 
-	 * @param b
-	 *            true if the objects should be displayed
-	 */
-	public void setObjectsDisplay(boolean b) {
-		objectsOn = b;
-	}
-
-	/**
 	 * Retrieves the first Light instance so that its attributes can be set from
 	 * the GUI. Currently only returns the first light instance, which is set to
 	 * be the general light for the entire scene. If two lights are created in
@@ -228,19 +247,14 @@ public class AssignmentScene {
 	 * objects to display
 	 */
 	public void reset() {
-		rotate = 0.0;
-		setObjectsDisplay(true);
-	}
-
-	/**
-	 * Increments the animation control attribute
-	 */
-	public void incRotate() {
-		rotate = (rotate + INC_ROTATE) % 360;
-		if (Math.sin(lampPeriod + Math.PI) - 0.7 > 0) {
-			currentLampRotation += Math.exp(-(Math.sin(LAMP_INC) + 1)) * 5;
-		}
-		lampPeriod += LAMP_INC;
+		lampRotate = 0.0;
+		currentLampRotate = 0.0;
+		lampSpeed = 1.0;
+		lampJumpHeight = 1.0;
+		//((BasicJumpLampAnimator) lampAnimator).scheduleSetJumpHeight(lampJumpHeight);
+		
+		showTextures(true);
+		lamp.showLight(true);
 	}
 
 	/**
@@ -248,33 +262,54 @@ public class AssignmentScene {
 	 * things for each frame of animation.
 	 */
 	public void update() {
-		incRotate();
-	}
-
-	public void setLampAnimator(LampAnimator animator) {
-		//this.lamp.setAnimator(animator);
-	}
-
-	public LampAnimator getLampAnimator() {
-		//return this.lamp.getAnimator();
-		return null;
+		System.out.println(currentLampRotate + "  " + lampRotate);
+		if (currentLampRotate % 360 > 120 && currentLampRotate % 360 < 220) {
+			lampJumpHeight = 4.0;
+			lampSpeed = 0.5;
+		} else {
+			lampJumpHeight = 1.0;
+			lampSpeed = 1.0;
+		}
+		//((BasicJumpLampAnimator) lampAnimator).scheduleSetJumpHeight(lampJumpHeight / 2);
+		//((BasicJumpLampAnimator) lampAnimator).scheduleSetSpeed(lampSpeed);
+		
+		if (Math.sin(lampRotate) <= 0) {
+			//if(((BasicJumpLampAnimator) lampAnimator).isOnGround() && currentLampRotate > 340) {
+				
+			//}
+			currentLampRotate += Math.exp(-(Math.sin(lampRotate % (2 * Math.PI)) + 1) * 4) * 3 * lampJumpHeight;
+		}
+		
+		lampRotate += LAMP_INC * lampSpeed;
 	}
 	
-	public void switchJumpingLampOn() {
-		this.lamp.switchOn();
+	public void doAnimation(boolean doAnimation) {
+		if (doAnimation) {
+			lamp.startAnimation();
+			barrelThree.startAnimation();
+		} else {
+			lamp.stopAnimation();
+			barrelThree.stopAnimation();
+		}
 	}
 	
-	public void switchJumpingLampOff() {
-		this.lamp.switchOff();
+	public void pauseAnimation() {
+		lamp.pauseAnimation();
+		barrelThree.pauseAnimation();
 	}
 	
-	public void hideTextures() {
-		this.brickOne.displayTextures(false);
+	public void showJumpingLampLight(boolean showLight) {
+		this.lamp.showLight(showLight);
+	}
+	
+	public void showTextures(boolean showTextures) {
+		for (TexturedObject texturedObject : texturedObjects) {
+			texturedObject.showTextures(showTextures);
+		}
 	}
 
 	private void doLight(GL2 gl) {
 		gl.glPushMatrix();
-		gl.glRotated(rotate, 0, 1, 0);
 		if (light.getSwitchedOn()) {
 			light.use(gl, glut, false);
 		} else
@@ -318,14 +353,16 @@ public class AssignmentScene {
 			gl.glPopMatrix();
 
 			gl.glPushMatrix();
-			gl.glTranslated(-2.7, 0, 2.3);
-			gl.glRotated(55, 0, 1.0, 0);
+			gl.glTranslated(1.5, 0, -3.3);
+			gl.glRotated(20, 0, 1.0, 0);
 			barrelThree.render(gl);
 			gl.glPopMatrix();
 
 			gl.glPushMatrix();
 			gl.glTranslated(1.6, 1.5, -4.6);
 			gl.glRotated(90, 1.0, 0, 0);
+			gl.glTranslated(0, 0, 0.3);
+			gl.glScaled(1, 1, 0.8);
 			barrelFour.render(gl);
 			gl.glPopMatrix();
 
@@ -364,7 +401,7 @@ public class AssignmentScene {
 			gl.glPopMatrix();
 
 			gl.glPushMatrix();
-			gl.glTranslated(2.2, 0, -2.9);
+			gl.glTranslated(2.6, 0, -2.9);
 			gl.glRotated(70, 0, 1.0, 0);
 			brickFour.render(gl);
 			gl.glPopMatrix();
@@ -383,7 +420,7 @@ public class AssignmentScene {
 
 			// Draw lamp
 			gl.glPushMatrix();
-			gl.glRotated(-currentLampRotation, 0, 1.0, 0);
+			gl.glRotated(-currentLampRotate, 0, 1.0, 0);
 			gl.glTranslated(0, 0, 2);
 			lamp.render(gl);
 			gl.glPopMatrix();

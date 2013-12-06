@@ -6,8 +6,8 @@ import object.MeshObjectPart;
 import object.ObjectPart;
 import object.SceneObject;
 import object.StaticRender;
+import object.TexturedObject;
 import object.modification.Modification;
-import object.modification.ScaleModification;
 import object.modification.TranslateModification;
 import object.modification.RotateModification;
 import assignment.Mesh;
@@ -15,7 +15,7 @@ import assignment.ProceduralMeshFactory;
 
 import com.jogamp.opengl.util.texture.Texture;
 
-public class Room {
+public class Room implements TexturedObject {
 
 	private StaticRender render;
 
@@ -86,12 +86,8 @@ public class Room {
 		this.render.getSceneObject().setTextures(textures);
 	}
 	
-	public void displayTextures(boolean displayTextures) {
-		if (displayTextures) {
-			this.render.getSceneObject().showTextures();
-		} else {
-			this.render.getSceneObject().hideTextures();
-		}
+	public void showTextures(boolean showTextures) {
+		this.render.showTextures(showTextures);
 	}
 	
 	public void render(GL2 gl) {

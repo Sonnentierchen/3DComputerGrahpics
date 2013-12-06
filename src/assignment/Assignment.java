@@ -15,9 +15,6 @@ import com.jogamp.opengl.util.*;
 
 import javax.media.opengl.glu.GLU;
 
-import object.dynamicobjects.lamp.JumpLampAnimator_Old;
-import object.dynamicobjects.lamp.NullLampAnimator;
-
 import com.jogamp.opengl.util.gl2.GLUT;
 
 public class Assignment extends Frame implements GLEventListener,
@@ -32,7 +29,7 @@ public class Assignment extends Frame implements GLEventListener,
 	private Point lastpoint; // used with mouse routines
 	private int width, height;
 
-	private Checkbox checkAxes, checkObjects, checkLight0;
+	private Checkbox checkAxes, checkTextures, checkLight0, checkLamp;
 	private Button startAnim, pauseAnim, resetScene;
 	private boolean continuousAnimation = CONTINUOUS_ANIMATION;
 
@@ -57,6 +54,7 @@ public class Assignment extends Frame implements GLEventListener,
 	public Assignment() {
 		setTitle("Assignment - Florian Blume");
 		setSize(WIDTH, HEIGHT);
+		setLocation(new Point(400, 100));
 
 		GLProfile glp = GLProfile.getDefault();
 		GLCapabilities caps = new GLCapabilities(glp);
@@ -80,15 +78,12 @@ public class Assignment extends Frame implements GLEventListener,
 
 		Panel p = new Panel(new GridLayout(2, 1));
 		Panel p1 = new Panel(new GridLayout(5, 3));
-		checkAxes = addCheckbox(p1, "axes on", this);
-		checkObjects = addCheckbox(p1, "objects on", this);
-		checkLight0 = addCheckbox(p1, "Light 0 on", this);
+		checkAxes = addCheckbox(p1, "Axes On", this);
+		checkTextures = addCheckbox(p1, "Textures On", this);
+		checkLight0 = addCheckbox(p1, "Directional Light", this);
+		checkLamp = addCheckbox(p1, "Lamp Light", this);
 		p.add(p1);
 		p1 = new Panel(new GridLayout(4, 1));
-		Button rotate = new Button("Rotate light");
-		rotate.setActionCommand("Rotate");
-		rotate.addActionListener(this);
-		p1.add(rotate);
 		startAnim = new Button("Start animation");
 		startAnim.setActionCommand("StartAnim");
 		startAnim.addActionListener(this);
@@ -134,17 +129,18 @@ public class Assignment extends Frame implements GLEventListener,
 	 *            Automatically supplied by the system when an action occurs.
 	 */
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equalsIgnoreCase("rotate")) {
-			scene.incRotate();
-			canvas.repaint();
-		} else if (e.getActionCommand().equalsIgnoreCase("quit")) {
+		if (e.getActionCommand().equalsIgnoreCase("quit")) {
 			System.exit(0);
 		} else if (e.getActionCommand().equalsIgnoreCase("startanim")) {
-			setContinuousAnimation(true);
+			scene.doAnimation(true);
+			this.continuousAnimation = true;
 		} else if (e.getActionCommand().equalsIgnoreCase("pauseanim")) {
-			setContinuousAnimation(false);
+			scene.pauseAnimation();
+			this.continuousAnimation = false;
 		} else if (e.getActionCommand().equalsIgnoreCase("resetscene")) {
+			scene.doAnimation(false);
 			reset();
+			this.continuousAnimation = false;
 		}
 	}
 
@@ -159,31 +155,20 @@ public class Assignment extends Frame implements GLEventListener,
 		Object source = e.getSource();
 		if (source == checkAxes) {
 			scene.getAxes().setSwitchedOn(checkAxes.getState());
-			this.scene.hideTextures();
 			canvas.repaint();
-		} else if (source == checkObjects) {
-			scene.setObjectsDisplay(checkObjects.getState());
+		} else if (source == checkTextures) {
+			this.scene.showTextures(checkTextures.getState());
 			canvas.repaint();
 		} else if (source == checkLight0) {
 			scene.getLight().setSwitchedOn(checkLight0.getState());
-			if (checkLight0.getState()) {
-				scene.switchJumpingLampOn();
-			} else {
-				scene.switchJumpingLampOff();
-			}
 			canvas.repaint();
+		} else if (source == checkLamp) {
+			scene.showJumpingLampLight(checkLamp.getState());
 		}
 	}
 
 	private void setContinuousAnimation(boolean b) {
-		/*if (b) {
-			if (!(scene.getLampAnimator() instanceof JumpLampAnimator_Old)) {
-				scene.setLampAnimator(new JumpLampAnimator_Old());
-			}
-			scene.getLampAnimator().start();
-		} else {
-			scene.getLampAnimator().pause();
-		}*/
+		scene.doAnimation(b);
 		continuousAnimation = b;
 	}
 
@@ -191,11 +176,11 @@ public class Assignment extends Frame implements GLEventListener,
 		//scene.setLampAnimator(NullLampAnimator.getInstance());
 		checkAxes.setState(true);
 		scene.getAxes().setSwitchedOn(true);
-		checkObjects.setState(true);
-		scene.setObjectsDisplay(true);
+		checkTextures.setState(true);
 		checkLight0.setState(true);
+		checkLamp.setState(true);
 		scene.getLight().setSwitchedOn(true);
-		setContinuousAnimation(CONTINUOUS_ANIMATION);
+		continuousAnimation = false;
 		scene.reset();
 	}
 

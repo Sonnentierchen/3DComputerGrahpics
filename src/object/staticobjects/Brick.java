@@ -1,8 +1,5 @@
 package object.staticobjects;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.media.opengl.GL2;
 
 import assignment.Mesh;
@@ -14,10 +11,11 @@ import object.MeshObjectPart;
 import object.ObjectPart;
 import object.SceneObject;
 import object.StaticRender;
+import object.TexturedObject;
 import object.modification.Modification;
 import object.modification.TranslateModification;
 
-public class Brick {
+public class Brick implements TexturedObject {
 
 	private StaticRender render;
 
@@ -34,12 +32,8 @@ public class Brick {
 		this.render.getSceneObject().setTextures(textures);
 	}
 	
-	public void displayTextures(boolean displayTextures) {
-		if (displayTextures) {
-			this.render.getSceneObject().showTextures();
-		} else {
-			this.render.getSceneObject().hideTextures();
-		}
+	public void showTextures(boolean showTextures) {
+		this.render.showTextures(showTextures);
 	}
 	
 	public void render(GL2 gl) {

@@ -42,12 +42,8 @@ public class MeshObjectPart extends ObjectPart {
 		return texture;
 	}
 	
-	public void showTexture() {
-		this.showTexture = true;
-	}
-	
-	public void hideTexture() {
-		this.showTexture = true;
+	public void showTexture(boolean showTexture) {
+		this.showTexture = showTexture;
 	}
 	
 	public boolean getShowTexture() {

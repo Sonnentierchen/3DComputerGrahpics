@@ -1,31 +1,30 @@
 package object.dynamicobjects.lamp;
 
-import java.util.LinkedList;
-
 import javax.media.opengl.GL2;
 
 import assignment.Light;
 import assignment.Material;
 import assignment.Mesh;
 import assignment.ProceduralMeshFactory;
+import assignment.Vertex;
 
 import com.jogamp.opengl.util.texture.Texture;
 
-import object.dynamicobjects.AnimationObject;
-
+import object.dynamicobjects.AnimatedObject;
 import object.DynamicRender;
 import object.GlutSphereObjectPart;
 import object.LightObjectPart;
 import object.MeshObjectPart;
 import object.ObjectPart;
 import object.SceneObject;
+import object.TexturedObject;
 import object.animation.Animator;
 import object.modification.Modification;
 import object.modification.RotateModification;
 import object.modification.ScaleModification;
 import object.modification.TranslateModification;
 
-public class Lamp implements AnimationObject {
+public class Lamp implements AnimatedObject, TexturedObject {
 	
 	private static Material switchedOnMaterial = new Material();
 	
@@ -62,7 +61,7 @@ public class Lamp implements AnimationObject {
 		Modification lowerJointTranslate = new TranslateModification(0, 0,
 				-0.15);
 		Modification lowerJointScale = new ScaleModification(0.26, 0.26, 0.3);
-		Modification lowerJointGlobalRotate = new RotateModification(-20, 0, 0,
+		Modification lowerJointGlobalRotate = new RotateModification(-10, 0, 0,
 				1.0);
 		Modification lowerJointGlobalTranslate = new TranslateModification(0,
 				0.15, 0);
@@ -88,9 +87,11 @@ public class Lamp implements AnimationObject {
 		Modification upperJointScale = new ScaleModification(0.18, 0.18, 0.15);
 		Modification upperJointGlobalTranslate = new TranslateModification(0,
 				1.3, 0);
+		Modification upperJointGlobalRotate = new RotateModification(-10, 0,
+				0, 1.0);
 		ObjectPart upperJoint = new MeshObjectPart(upperJointMesh, textures[3],
 				new Modification[] { upperJointTranslate, upperJointScale },
-				new Modification[] { upperJointGlobalTranslate });
+				new Modification[] { upperJointGlobalTranslate, upperJointGlobalRotate });
 
 		// upper arm
 		Mesh upperArmMesh = ProceduralMeshFactory.createCylinder(slices,
@@ -148,28 +149,17 @@ public class Lamp implements AnimationObject {
 		render = new DynamicRender(sceneObject, jumpAnimtor);
 	}
 	
-	public void switchOn() {
+	public void showLight(boolean showLight) {
 		SceneObject sceneObject = render.getSceneObject();
-		sceneObject.switchLightsOn();
+		sceneObject.showLight(showLight);
 		Material[] materials = new Material[8];
 		for (int i = 0; i < 8; i++) {
 			materials[i] = new Material();
 		}
-		materials[7] = (Material) switchedOnMaterial.clone();
+		materials[7] = (showLight ? (Material) switchedOnMaterial.clone() : (Material) switchedOffMaterial.clone());
 		sceneObject.setMaterials(materials);
 	}
 	
-	public void switchOff() {
-		SceneObject sceneObject = render.getSceneObject();
-		sceneObject.switchLightsOff();
-		Material[] materials = new Material[8];
-		for (int i = 0; i < 8; i++) {
-			materials[i] = new Material();
-		}
-		materials[7] = (Material) switchedOffMaterial.clone();
-		sceneObject.setMaterials(materials);
-	}
-
 	public void render(GL2 gl) {
 		render.render(gl);
 	}
@@ -188,7 +178,25 @@ public class Lamp implements AnimationObject {
 	public void stopAnimation() {
 		this.render.stopAnimation();
 	}
-	
-	
+
+	@Override
+	public void setTextures(Texture[] textures) {
+		this.render.getSceneObject().setTextures(textures);
+	}
+
+	@Override
+	public void showTextures(boolean showTextures) {
+		this.render.showTextures(showTextures);
+	}
+
+	@Override
+	public void setAnimationSpeed(double speed) {
+		this.render.setAnimationSpeed(speed);
+	}
+
+	@Override
+	public void setAnimator(Animator animator) {
+		this.render.setAnimator(animator);
+	}
 
 }

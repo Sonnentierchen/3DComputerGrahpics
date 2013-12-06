@@ -60,14 +60,9 @@ public abstract class SceneObjectRender {
 				0);
 	}
 
-	public void showTextures() {
-		this.sceneObject.showTextures();
-		this.showTextures = true;
-	}
-
-	public void hideTextures() {
-		this.sceneObject.hideTextures();
-		this.showTextures = false;
+	public void showTextures(boolean showTextures) {
+		this.sceneObject.showTextures(showTextures);
+		this.showTextures = showTextures;
 	}
 
 	public boolean getShowTextures() {

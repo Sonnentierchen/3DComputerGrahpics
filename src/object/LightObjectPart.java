@@ -30,14 +30,9 @@ public class LightObjectPart extends ObjectPart {
 		return this.switchedOn;
 	}
 	
-	public void switchOn() {
-		this.light.setSwitchedOn(true);
-		this.switchedOn = true;
-	}
-	
-	public void switchOff() {
-		this.light.setSwitchedOn(false);
-		this.switchedOn = false;
+	public void showLight(boolean showLight) {
+		this.light.setSwitchedOn(showLight);
+		this.switchedOn = showLight;
 	}
 
 }

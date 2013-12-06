@@ -75,20 +75,17 @@ public class SceneObject {
 		return parts;
 	}
 
-	public void showTextures() {
+	public void showTextures(boolean showTextures) {
 		for (ObjectPart objectPart : rootObjectParts) {
 			if (objectPart instanceof MeshObjectPart) {
-				((MeshObjectPart) objectPart).showTexture();
+				((MeshObjectPart) objectPart).showTexture(showTextures);
 			}
 		}
-		this.showTextures = true;
+		this.showTextures = showTextures;
 	}
 
-	public void hideTextures() {
-		for (ObjectPart objectPart : rootObjectParts) {
-			((MeshObjectPart) objectPart).hideTexture();
-		}
-		this.showTextures = false;
+	public boolean getShowTextures() {
+		return this.showTextures;
 	}
 
 	public void setTextures(Texture[] textures) {
@@ -118,20 +115,10 @@ public class SceneObject {
 			objectParts.get(i).setMaterial(materials[i]);
 		}
 	}
-
-	public boolean getShowTextures() {
-		return this.showTextures;
-	}
 	
-	public void switchLightsOn() {
+	public void showLight(boolean showLight) {
 		for (ObjectPart light : getAllObjectParts(LightObjectPart.class)) {
-			((LightObjectPart) light).switchOn();
-		}
-	}
-	
-	public void switchLightsOff() {
-		for (ObjectPart light : getAllObjectParts(LightObjectPart.class)) {
-			((LightObjectPart) light).switchOff();
+			((LightObjectPart) light).showLight(showLight);
 		}
 	}
 

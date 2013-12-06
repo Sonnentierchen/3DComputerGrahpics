@@ -6,6 +6,8 @@ public interface Animator {
 	
 	public Iterator<AnimationStep> getAnimationStepIterator();
 	
+	public void setAnimationSpeed(double speed);
+	
 	public void start();
 	
 	public void pause();
