@@ -31,6 +31,7 @@ import object.dynamicobjects.dynamicbarrel.DynamicBarrel;
 import object.dynamicobjects.lamp.BasicJumpLampAnimator;
 import object.dynamicobjects.lamp.JumpLampAnimator;
 import object.dynamicobjects.lamp.Lamp;
+import object.dynamicobjects.lamp.SwingJumpLampAnimator;
 import object.animation.Animator;
 
 import com.jogamp.opengl.util.gl2.GLUT;
@@ -40,7 +41,7 @@ public class AssignmentScene {
 	private GLU glu = new GLU();
 	private GLUT glut = new GLUT();
 
-	private final double LAMP_INC = 0.13;
+	private final double LAMP_INC = 0.15;
 	private double lampSpeed = 1.0;
 	private double lampRotate = 0.0;
 	private double currentLampRotate = 0.0;
@@ -57,8 +58,12 @@ public class AssignmentScene {
 	private Light illuminationLight;
 	private Camera camera;
 	private Axes axes;
-	private Lamp lamp;
+	private Lamp jumpingLamp;
 	private Animator lampAnimator;
+	private Lamp lampOne;
+	private Lamp lampTwo;
+	private Lamp lampThree;
+	private Lamp lampFour;
 
 	private Brick brickOne;
 	private Brick brickTwo;
@@ -155,11 +160,19 @@ public class AssignmentScene {
 		barrelFive = new Barrel(barrelFiveTexture, 30, 30);
 		barrelSix = new Barrel(barrelSixTexture, 30, 30);
 
-		lamp = new Lamp(GL2.GL_LIGHT2,
+		jumpingLamp = new Lamp(GL2.GL_LIGHT2,
 				new Texture[] { lampTexture, lampTexture, lampTexture,
 				lampTexture, lampTexture, lampTopTexture }, 30, 30);
 		lampAnimator = new JumpLampAnimator();
-		lamp.setAnimator(lampAnimator);
+		jumpingLamp.setAnimator(lampAnimator);
+		lampOne = new Lamp(GL2.GL_LIGHT3, new Texture[] { lampTexture, lampTexture, lampTexture,
+				lampTexture, lampTexture, lampTopTexture }, 30, 30);
+		lampTwo = new Lamp(GL2.GL_LIGHT3, new Texture[] { lampTexture, lampTexture, lampTexture,
+				lampTexture, lampTexture, lampTopTexture }, 30, 30);
+		lampThree = new Lamp(GL2.GL_LIGHT3, new Texture[] { lampTexture, lampTexture, lampTexture,
+				lampTexture, lampTexture, lampTopTexture }, 30, 30);
+		lampFour = new Lamp(GL2.GL_LIGHT3, new Texture[] { lampTexture, lampTexture, lampTexture,
+				lampTexture, lampTexture, lampTopTexture }, 30, 30);
 		
 		texturedObjects.add(room);
 		texturedObjects.add(brickOne);
@@ -176,7 +189,11 @@ public class AssignmentScene {
 		texturedObjects.add(barrelFive);
 		texturedObjects.add(barrelSix);
 		
-		texturedObjects.add(lamp);
+		texturedObjects.add(jumpingLamp);
+		texturedObjects.add(lampOne);
+		texturedObjects.add(lampTwo);
+		texturedObjects.add(lampThree);
+		texturedObjects.add(lampFour);
 		/* end of own code */
 	}
 
@@ -254,7 +271,7 @@ public class AssignmentScene {
 		//((BasicJumpLampAnimator) lampAnimator).scheduleSetJumpHeight(lampJumpHeight);
 		
 		showTextures(true);
-		lamp.showLight(true);
+		jumpingLamp.showLight(true);
 	}
 
 	/**
@@ -262,10 +279,10 @@ public class AssignmentScene {
 	 * things for each frame of animation.
 	 */
 	public void update() {
-		System.out.println(currentLampRotate + "  " + lampRotate);
+		//System.out.println(currentLampRotate + "  " + lampRotate);
 		if (currentLampRotate % 360 > 120 && currentLampRotate % 360 < 220) {
-			lampJumpHeight = 4.0;
-			lampSpeed = 0.5;
+			//lampJumpHeight = 4.0;
+			//lampSpeed = 0.5;
 		} else {
 			lampJumpHeight = 1.0;
 			lampSpeed = 1.0;
@@ -277,7 +294,7 @@ public class AssignmentScene {
 			//if(((BasicJumpLampAnimator) lampAnimator).isOnGround() && currentLampRotate > 340) {
 				
 			//}
-			currentLampRotate += Math.exp(-(Math.sin(lampRotate % (2 * Math.PI)) + 1) * 4) * 3 * lampJumpHeight;
+			currentLampRotate += -Math.sin(lampRotate % (2 * Math.PI)) * 4 * lampJumpHeight;
 		}
 		
 		lampRotate += LAMP_INC * lampSpeed;
@@ -285,21 +302,21 @@ public class AssignmentScene {
 	
 	public void doAnimation(boolean doAnimation) {
 		if (doAnimation) {
-			lamp.startAnimation();
+			jumpingLamp.startAnimation();
 			barrelThree.startAnimation();
 		} else {
-			lamp.stopAnimation();
+			jumpingLamp.stopAnimation();
 			barrelThree.stopAnimation();
 		}
 	}
 	
 	public void pauseAnimation() {
-		lamp.pauseAnimation();
+		jumpingLamp.pauseAnimation();
 		barrelThree.pauseAnimation();
 	}
 	
 	public void showJumpingLampLight(boolean showLight) {
-		this.lamp.showLight(showLight);
+		this.jumpingLamp.showLight(showLight);
 	}
 	
 	public void showTextures(boolean showTextures) {
@@ -417,12 +434,39 @@ public class AssignmentScene {
 			gl.glRotated(-50, 0, 1.0, 0);
 			brickSix.render(gl);
 			gl.glPopMatrix();
+			
+			gl.glPushMatrix();
+			gl.glScaled(0.5, 0.5, 0.5);
 
-			// Draw lamp
+			// Draw lamps
 			gl.glPushMatrix();
 			gl.glRotated(-currentLampRotate, 0, 1.0, 0);
 			gl.glTranslated(0, 0, 2);
-			lamp.render(gl);
+			jumpingLamp.render(gl);
+			gl.glPopMatrix();
+			
+			gl.glPushMatrix();
+			gl.glRotated(30, 0, 1.0, 0);
+			gl.glTranslated(3, 0, 2.3);
+			lampOne.render(gl);
+			gl.glPopMatrix();
+			
+			gl.glPushMatrix();
+			gl.glRotated(-30, 0, 1.0, 0);
+			gl.glTranslated(-3, 0, 2);
+			lampTwo.render(gl);
+			gl.glPopMatrix();
+			
+			gl.glPushMatrix();
+			gl.glTranslated(2, 0, -2);
+			lampThree.render(gl);
+			gl.glPopMatrix();
+			
+			gl.glPushMatrix();
+			gl.glTranslated(-2, 0, -2);
+			lampFour.render(gl);
+			gl.glPopMatrix();
+			
 			gl.glPopMatrix();
 		}
 	}
