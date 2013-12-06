@@ -62,6 +62,13 @@ public abstract class ObjectPart {
 	public Material getMaterial() {
 		return material;
 	}
+	
+	public void setMaterial(Material material) {
+		if (material == null) {
+			throw new IllegalArgumentException();
+		}
+		this.material = material;
+	}
 
 	/**
 	 * @return the modifications

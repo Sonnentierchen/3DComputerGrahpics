@@ -1,8 +1,8 @@
-package dynamicobjects.lamp;
+package object.dynamicobjects.lamp;
 
 import javax.media.opengl.GL2;
 
-public class JumpLampAnimator implements LampAnimator {
+public class JumpLampAnimator_Old implements LampAnimator {
 
 	private boolean started = false;
 

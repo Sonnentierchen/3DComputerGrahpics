@@ -1,6 +1,5 @@
 package object;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,7 +7,6 @@ import javax.media.opengl.GL2;
 
 import com.jogamp.opengl.util.gl2.GLUT;
 
-import object.modification.Modification;
 import assignment.Material;
 import assignment.Render;
 
@@ -74,6 +72,10 @@ public abstract class SceneObjectRender {
 
 	public boolean getShowTextures() {
 		return this.showTextures;
+	}
+	
+	public SceneObject getSceneObject() {
+		return this.sceneObject;
 	}
 
 }

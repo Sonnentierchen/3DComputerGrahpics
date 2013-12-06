@@ -53,5 +53,9 @@ public class MeshObjectPart extends ObjectPart {
 	public boolean getShowTexture() {
 		return this.showTexture;
 	}
+	
+	public void setTexture(Texture texture) {
+		this.texture = texture;
+	}
 
 }

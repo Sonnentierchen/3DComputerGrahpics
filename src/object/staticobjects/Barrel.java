@@ -1,4 +1,4 @@
-package staticobjects;
+package object.staticobjects;
 
 import javax.media.opengl.GL2;
 
@@ -27,6 +27,18 @@ public class Barrel {
 				translate, scale }, new Modification[0]);
 		SceneObject sceneObject = new SceneObject(new ObjectPart[] {part});
 		render = new StaticRender(sceneObject);
+	}
+	
+	public void setTextures(Texture[] textures) {
+		this.render.getSceneObject().setTextures(textures);
+	}
+	
+	public void displayTextures(boolean displayTextures) {
+		if (displayTextures) {
+			this.render.getSceneObject().showTextures();
+		} else {
+			this.render.getSceneObject().hideTextures();
+		}
 	}
 	
 	public void render(GL2 gl) {

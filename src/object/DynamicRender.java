@@ -56,9 +56,7 @@ public class DynamicRender extends SceneObjectRender {
 					currentRender.renderImmediateMode(gl, showTextures);
 				} else if (currentPart instanceof LightObjectPart){
 					LightObjectPart light = (LightObjectPart) currentPart;
-					if (light.switchedOn()) {
-						light.getLight().use(gl, glut, false);
-					}
+					light.getLight().use(gl, glut, false);
 				} else {
 					glut.glutSolidSphere(0.20, 20, 20);
 				}
@@ -70,17 +68,17 @@ public class DynamicRender extends SceneObjectRender {
 		gl.glPopMatrix();
 	}
 
-	public void start() {
+	public void startAnimation() {
 		this.running = true;
 		this.animator.start();
 	}
 
-	public void stop() {
+	public void stopAnimation() {
 		this.running = false;
 		this.animator.reset();
 	}
 
-	public void pause() {
+	public void pauseAnimation() {
 		this.running = false;
 		this.animator.pause();
 	}

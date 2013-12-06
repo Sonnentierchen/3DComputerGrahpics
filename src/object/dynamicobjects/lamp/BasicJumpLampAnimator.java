@@ -1,4 +1,4 @@
-package dynamicobjects.lamp;
+package object.dynamicobjects.lamp;
 
 import javax.media.opengl.GL2;
 

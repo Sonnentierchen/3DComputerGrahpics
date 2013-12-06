@@ -1,4 +1,6 @@
-package dynamicobjects.lamp;
+package object.dynamicobjects.lamp;
+
+import java.util.LinkedList;
 
 import javax.media.opengl.GL2;
 
@@ -9,18 +11,25 @@ import assignment.ProceduralMeshFactory;
 
 import com.jogamp.opengl.util.texture.Texture;
 
+import object.dynamicobjects.AnimationObject;
+
 import object.DynamicRender;
 import object.GlutSphereObjectPart;
 import object.LightObjectPart;
 import object.MeshObjectPart;
 import object.ObjectPart;
 import object.SceneObject;
+import object.animation.Animator;
 import object.modification.Modification;
 import object.modification.RotateModification;
 import object.modification.ScaleModification;
 import object.modification.TranslateModification;
 
-public class Lamp {
+public class Lamp implements AnimationObject {
+	
+	private static Material switchedOnMaterial = new Material();
+	
+	private static final Material switchedOffMaterial = new Material();
 
 	private DynamicRender render;
 
@@ -28,6 +37,15 @@ public class Lamp {
 		if (textures.length != 6) {
 			throw new IllegalArgumentException("Textures count not equal 6");
 		}
+		
+		float[] matAmbientDiffuse = { 0.1f, 0.1f, 0.1f, 1.0f };
+		float[] matSpecular = { 0.0f, 0.0f, 0.0f, 0.0f };
+		float[] matShininess = { 1.0f };
+		float[] matEmission = { 0.9f, 0.9f, 0.9f, 1.0f };
+		switchedOnMaterial.setAmbient(matAmbientDiffuse);
+		switchedOnMaterial.setSpecular(matSpecular);
+		switchedOnMaterial.setShininess(matShininess[0]);
+		switchedOnMaterial.setEmission(matEmission);
 
 		// base
 		Mesh baseMesh = ProceduralMeshFactory.createCylinder(slices, stacks,
@@ -113,16 +131,7 @@ public class Lamp {
 		// bulb
 		Modification bulbScaleOne = new ScaleModification(1.1, 1.1, 1.1);
 		Modification bulbScaleTwo = new ScaleModification(0.5, 1.0, 1.0);
-		Material material = new Material();
-		float[] matAmbientDiffuse = { 0.1f, 0.1f, 0.1f, 1.0f };
-		float[] matSpecular = { 0.0f, 0.0f, 0.0f, 0.0f };
-		float[] matShininess = { 1.0f };
-		float[] matEmission = { 0.9f, 0.9f, 0.9f, 1.0f };
-		material.setAmbient(matAmbientDiffuse);
-		material.setSpecular(matSpecular);
-		material.setShininess(matShininess[0]);
-		material.setEmission(matEmission);
-		GlutSphereObjectPart bulb = new GlutSphereObjectPart(material,
+		GlutSphereObjectPart bulb = new GlutSphereObjectPart(switchedOnMaterial,
 				new Modification[] { bulbScaleOne, bulbScaleTwo },
 				new Modification[0]);
 
@@ -135,11 +144,51 @@ public class Lamp {
 		lowerJoint.addSubPart(lowerArm);
 		base.addSubPart(lowerJoint);
 		SceneObject sceneObject = new SceneObject(new ObjectPart[] { base });
-		render = new DynamicRender(sceneObject, new NullLampAnimator());
+		Animator jumpAnimtor = new JumpLampAnimator();
+		render = new DynamicRender(sceneObject, jumpAnimtor);
+	}
+	
+	public void switchOn() {
+		SceneObject sceneObject = render.getSceneObject();
+		sceneObject.switchLightsOn();
+		Material[] materials = new Material[8];
+		for (int i = 0; i < 8; i++) {
+			materials[i] = new Material();
+		}
+		materials[7] = (Material) switchedOnMaterial.clone();
+		sceneObject.setMaterials(materials);
+	}
+	
+	public void switchOff() {
+		SceneObject sceneObject = render.getSceneObject();
+		sceneObject.switchLightsOff();
+		Material[] materials = new Material[8];
+		for (int i = 0; i < 8; i++) {
+			materials[i] = new Material();
+		}
+		materials[7] = (Material) switchedOffMaterial.clone();
+		sceneObject.setMaterials(materials);
 	}
 
 	public void render(GL2 gl) {
 		render.render(gl);
 	}
+
+	@Override
+	public void startAnimation() {
+		this.render.startAnimation();
+	}
+
+	@Override
+	public void pauseAnimation() {
+		this.render.pauseAnimation();
+	}
+
+	@Override
+	public void stopAnimation() {
+		this.render.stopAnimation();
+	}
+	
+	
 
 }

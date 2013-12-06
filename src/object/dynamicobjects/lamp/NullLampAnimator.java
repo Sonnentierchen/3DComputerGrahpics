@@ -1,4 +1,4 @@
-package dynamicobjects.lamp;
+package object.dynamicobjects.lamp;
 
 import java.util.Iterator;
 import java.util.LinkedList;

@@ -15,15 +15,15 @@ import com.jogamp.opengl.util.*;
 
 import javax.media.opengl.glu.GLU;
 
-import dynamicobjects.lamp.JumpLampAnimator;
-import dynamicobjects.lamp.NullLampAnimator;
+import object.dynamicobjects.lamp.JumpLampAnimator_Old;
+import object.dynamicobjects.lamp.NullLampAnimator;
 
 import com.jogamp.opengl.util.gl2.GLUT;
 
 public class Assignment extends Frame implements GLEventListener,
 		ActionListener, ItemListener, MouseMotionListener {
 
-	public final static int WIDTH = 800;
+	public final static int WIDTH = 1000;
 	public final static int HEIGHT = 800;
 	private static final float NEAR_CLIP = 0.1f;
 	private static final float FAR_CLIP = 100.0f;
@@ -55,7 +55,7 @@ public class Assignment extends Frame implements GLEventListener,
 	 * Constructor. Creates the GUI.
 	 */
 	public Assignment() {
-		setTitle("Tex3");
+		setTitle("Assignment - Florian Blume");
 		setSize(WIDTH, HEIGHT);
 
 		GLProfile glp = GLProfile.getDefault();
@@ -79,7 +79,7 @@ public class Assignment extends Frame implements GLEventListener,
 		menuBar.add(fileMenu);
 
 		Panel p = new Panel(new GridLayout(2, 1));
-		Panel p1 = new Panel(new GridLayout(5, 1));
+		Panel p1 = new Panel(new GridLayout(5, 3));
 		checkAxes = addCheckbox(p1, "axes on", this);
 		checkObjects = addCheckbox(p1, "objects on", this);
 		checkLight0 = addCheckbox(p1, "Light 0 on", this);
@@ -159,20 +159,26 @@ public class Assignment extends Frame implements GLEventListener,
 		Object source = e.getSource();
 		if (source == checkAxes) {
 			scene.getAxes().setSwitchedOn(checkAxes.getState());
+			this.scene.hideTextures();
 			canvas.repaint();
 		} else if (source == checkObjects) {
 			scene.setObjectsDisplay(checkObjects.getState());
 			canvas.repaint();
 		} else if (source == checkLight0) {
 			scene.getLight().setSwitchedOn(checkLight0.getState());
+			if (checkLight0.getState()) {
+				scene.switchJumpingLampOn();
+			} else {
+				scene.switchJumpingLampOff();
+			}
 			canvas.repaint();
 		}
 	}
 
 	private void setContinuousAnimation(boolean b) {
 		/*if (b) {
-			if (!(scene.getLampAnimator() instanceof JumpLampAnimator)) {
-				scene.setLampAnimator(new JumpLampAnimator());
+			if (!(scene.getLampAnimator() instanceof JumpLampAnimator_Old)) {
+				scene.setLampAnimator(new JumpLampAnimator_Old());
 			}
 			scene.getLampAnimator().start();
 		} else {

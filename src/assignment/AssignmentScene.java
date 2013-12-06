@@ -10,9 +10,9 @@ import java.awt.image.*;
 
 import javax.imageio.*;
 
-import staticobjects.Barrel;
-import staticobjects.Brick;
-import staticobjects.Room;
+import object.staticobjects.Barrel;
+import object.staticobjects.Brick;
+import object.staticobjects.Room;
 
 import com.jogamp.opengl.util.awt.*;
 
@@ -24,8 +24,8 @@ import com.jogamp.opengl.util.texture.awt.*;
 
 import javax.media.opengl.glu.GLU;
 
-import dynamicobjects.lamp.Lamp;
-import dynamicobjects.lamp.LampAnimator;
+import object.dynamicobjects.lamp.Lamp;
+import object.dynamicobjects.lamp.LampAnimator;
 
 import com.jogamp.opengl.util.gl2.GLUT;
 
@@ -147,6 +147,7 @@ public class AssignmentScene {
 		lamp = new Lamp(GL2.GL_LIGHT2,
 				new Texture[] { lampTexture, lampTexture, lampTexture,
 				lampTexture, lampTexture, lampTopTexture }, 30, 30);
+		lamp.startAnimation();
 		/* end of own code */
 	}
 
@@ -257,6 +258,18 @@ public class AssignmentScene {
 	public LampAnimator getLampAnimator() {
 		//return this.lamp.getAnimator();
 		return null;
+	}
+	
+	public void switchJumpingLampOn() {
+		this.lamp.switchOn();
+	}
+	
+	public void switchJumpingLampOff() {
+		this.lamp.switchOff();
+	}
+	
+	public void hideTextures() {
+		this.brickOne.displayTextures(false);
 	}
 
 	private void doLight(GL2 gl) {

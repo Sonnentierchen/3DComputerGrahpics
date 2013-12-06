@@ -38,9 +38,7 @@ public class StaticRender extends SceneObjectRender {
 					currentRender.renderImmediateMode(gl, showTextures);
 				} else {
 					LightObjectPart light = (LightObjectPart) currentPart;
-					if (light.switchedOn()) {
-						light.getLight().use(gl, glut, false);
-					}
+					light.getLight().use(gl, glut, false);
 				}
 			gl.glPopMatrix();
 		
