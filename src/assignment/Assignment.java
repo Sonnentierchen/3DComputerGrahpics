@@ -29,7 +29,9 @@ public class Assignment extends Frame implements GLEventListener,
 	private Point lastpoint; // used with mouse routines
 	private int width, height;
 
-	private Checkbox checkAxes, checkTextures, checkLight0, checkLamp;
+	private Checkbox checkAxes, checkTextures, checkLight0, checkJumpingLamp,
+			checkStandingLampOne, checkStandingLampTwo, checkStandingLampThree,
+			checkLyingLamp;
 	private Button startAnim, pauseAnim, resetScene;
 	private boolean continuousAnimation = CONTINUOUS_ANIMATION;
 
@@ -77,11 +79,15 @@ public class Assignment extends Frame implements GLEventListener,
 		menuBar.add(fileMenu);
 
 		Panel p = new Panel(new GridLayout(2, 1));
-		Panel p1 = new Panel(new GridLayout(5, 3));
+		Panel p1 = new Panel(new GridLayout(8, 3));
 		checkAxes = addCheckbox(p1, "Axes On", this);
 		checkTextures = addCheckbox(p1, "Textures On", this);
 		checkLight0 = addCheckbox(p1, "Directional Light", this);
-		checkLamp = addCheckbox(p1, "Lamp Light", this);
+		checkJumpingLamp = addCheckbox(p1, "Jumping Lamp Light", this);
+		checkLyingLamp = addCheckbox(p1, "Lying Lamp Light", this);
+		checkStandingLampOne = addCheckbox(p1, "Standing Lamp Light 1", this);
+		checkStandingLampTwo = addCheckbox(p1, "Standing Lamp Light 2", this);
+		checkStandingLampThree = addCheckbox(p1, "Standing Lamp Light 3", this);
 		p.add(p1);
 		p1 = new Panel(new GridLayout(4, 1));
 		startAnim = new Button("Start animation");
@@ -162,8 +168,16 @@ public class Assignment extends Frame implements GLEventListener,
 		} else if (source == checkLight0) {
 			scene.getLight().setSwitchedOn(checkLight0.getState());
 			canvas.repaint();
-		} else if (source == checkLamp) {
-			scene.showJumpingLampLight(checkLamp.getState());
+		} else if (source == checkJumpingLamp) {
+			scene.showJumpingLampLight(checkJumpingLamp.getState());
+		} else if (source == checkLyingLamp) {
+			scene.showLyingLampLight(checkLyingLamp.getState());
+		} else if (source == checkStandingLampOne) {
+			scene.showStandingLampLightOne(checkStandingLampOne.getState());
+		} else if (source == checkStandingLampTwo) {
+			scene.showStandingLampLightTwo(checkStandingLampTwo.getState());
+		} else if (source == checkStandingLampThree) {
+			scene.showStandingLampLightThree(checkStandingLampThree.getState());
 		}
 	}
 
@@ -173,12 +187,12 @@ public class Assignment extends Frame implements GLEventListener,
 	}
 
 	private void reset() {
-		//scene.setLampAnimator(NullLampAnimator.getInstance());
+		// scene.setLampAnimator(NullLampAnimator.getInstance());
 		checkAxes.setState(true);
 		scene.getAxes().setSwitchedOn(true);
 		checkTextures.setState(true);
 		checkLight0.setState(true);
-		checkLamp.setState(true);
+		checkJumpingLamp.setState(true);
 		scene.getLight().setSwitchedOn(true);
 		continuousAnimation = false;
 		scene.reset();

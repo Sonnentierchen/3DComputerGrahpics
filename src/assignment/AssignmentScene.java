@@ -29,6 +29,7 @@ import javax.media.opengl.glu.GLU;
 
 import object.dynamicobjects.dynamicbarrel.DynamicBarrel;
 import object.dynamicobjects.lamp.BasicJumpLampAnimator;
+import object.dynamicobjects.lamp.HeadLightLampAnimator;
 import object.dynamicobjects.lamp.JumpLampAnimator;
 import object.dynamicobjects.lamp.Lamp;
 import object.dynamicobjects.lamp.SwingJumpLampAnimator;
@@ -46,7 +47,8 @@ public class AssignmentScene {
 	private double lampRotate = 0.0;
 	private double currentLampRotate = 0.0;
 	private double lampJumpHeight = 1.0;
-	private double lampJumpCompensation = 0.0;
+	
+	private boolean flickeringLightOn = true;
 	
 	private final String TEXTURE_FOLDER = "textures\\";
 
@@ -167,12 +169,23 @@ public class AssignmentScene {
 		jumpingLamp.setAnimator(lampAnimator);
 		lampOne = new Lamp(GL2.GL_LIGHT3, new Texture[] { lampTexture, lampTexture, lampTexture,
 				lampTexture, lampTexture, lampTopTexture }, 30, 30);
-		lampTwo = new Lamp(GL2.GL_LIGHT3, new Texture[] { lampTexture, lampTexture, lampTexture,
+		HeadLightLampAnimator headLightAnimator = new HeadLightLampAnimator();
+		lampOne.setAnimator(headLightAnimator);
+		lampOne.startAnimation();
+		lampTwo = new Lamp(GL2.GL_LIGHT4, new Texture[] { lampTexture, lampTexture, lampTexture,
 				lampTexture, lampTexture, lampTopTexture }, 30, 30);
-		lampThree = new Lamp(GL2.GL_LIGHT3, new Texture[] { lampTexture, lampTexture, lampTexture,
+		lampThree = new Lamp(GL2.GL_LIGHT5, new Texture[] { lampTexture, lampTexture, lampTexture,
 				lampTexture, lampTexture, lampTopTexture }, 30, 30);
-		lampFour = new Lamp(GL2.GL_LIGHT3, new Texture[] { lampTexture, lampTexture, lampTexture,
+		HeadLightLampAnimator headLightAnimatorBended = new HeadLightLampAnimator();
+		headLightAnimatorBended.setBendingAngle(-30);
+		headLightAnimatorBended.setLookupAngle(70);
+		lampThree.setAnimator(headLightAnimatorBended);
+		lampThree.startAnimation();
+		lampFour = new Lamp(GL2.GL_LIGHT6, new Texture[] { lampTexture, lampTexture, lampTexture,
 				lampTexture, lampTexture, lampTopTexture }, 30, 30);
+		HeadLightLampAnimator headLightAnimator2 = new HeadLightLampAnimator();
+		lampFour.setAnimator(headLightAnimator2);
+		lampFour.startAnimation();
 		
 		texturedObjects.add(room);
 		texturedObjects.add(brickOne);
@@ -201,8 +214,8 @@ public class AssignmentScene {
 		Texture tex = null;
 		// since file loading is involved, must use try...catch
 		try {
-			File f = new File("textures\\placeholder.jpg");
-			//File f = new File(filename);
+			//File f = new File("textures\\placeholder.jpg");
+			File f = new File(filename);
 
 			// The following line results in a texture that is flipped
 			// vertically (i.e. is upside down)
@@ -296,8 +309,10 @@ public class AssignmentScene {
 			//}
 			currentLampRotate += -Math.sin(lampRotate % (2 * Math.PI)) * 4 * lampJumpHeight;
 		}
-		
 		lampRotate += LAMP_INC * lampSpeed;
+		if (flickeringLightOn) {
+			lampTwo.showLight(Math.random() > 0.1);
+		}
 	}
 	
 	public void doAnimation(boolean doAnimation) {
@@ -315,8 +330,25 @@ public class AssignmentScene {
 		barrelThree.pauseAnimation();
 	}
 	
-	public void showJumpingLampLight(boolean showLight) {
+	public void showJumpingLampLight (boolean showLight) {
 		this.jumpingLamp.showLight(showLight);
+	}
+	
+	public void showLyingLampLight (boolean showLight) {
+		this.lampTwo.showLight(showLight);
+		this.flickeringLightOn = showLight;
+	}
+	
+	public void showStandingLampLightOne (boolean showLight) {
+		this.lampOne.showLight(showLight);
+	}
+	
+	public void showStandingLampLightTwo (boolean showLight) {
+		this.lampThree.showLight(showLight);
+	}
+	
+	public void showStandingLampLightThree (boolean showLight) {
+		this.lampFour.showLight(showLight);
 	}
 	
 	public void showTextures(boolean showTextures) {
@@ -441,29 +473,34 @@ public class AssignmentScene {
 			// Draw lamps
 			gl.glPushMatrix();
 			gl.glRotated(-currentLampRotate, 0, 1.0, 0);
-			gl.glTranslated(0, 0, 2);
+			gl.glTranslated(0, 0, 4);
 			jumpingLamp.render(gl);
 			gl.glPopMatrix();
 			
 			gl.glPushMatrix();
-			gl.glRotated(30, 0, 1.0, 0);
-			gl.glTranslated(3, 0, 2.3);
+			gl.glTranslated(6, 0, 4.5);
+			gl.glRotated(80, 0, 1.0, 0);
 			lampOne.render(gl);
 			gl.glPopMatrix();
 			
 			gl.glPushMatrix();
-			gl.glRotated(-30, 0, 1.0, 0);
-			gl.glTranslated(-3, 0, 2);
+			gl.glTranslated(3.7, 0.35, -3.18);
+			gl.glRotated(-2, 0, 0, 1.0);
+			gl.glRotated(-39.5, 1.0, 0, 0);
+			gl.glRotated(180, 0, 0, 1.0);
+			gl.glRotated(90, 0, 0, 1.0);
 			lampTwo.render(gl);
 			gl.glPopMatrix();
 			
 			gl.glPushMatrix();
-			gl.glTranslated(2, 0, -2);
+			gl.glTranslated(8, 0, -3);
+			gl.glRotated(40, 0, 1.0, 0);
 			lampThree.render(gl);
 			gl.glPopMatrix();
 			
 			gl.glPushMatrix();
-			gl.glTranslated(-2, 0, -2);
+			gl.glTranslated(-6, 0, -6);
+			gl.glRotated(170, 0, 1.0, 0);
 			lampFour.render(gl);
 			gl.glPopMatrix();
 			

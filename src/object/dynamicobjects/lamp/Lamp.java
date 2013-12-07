@@ -39,7 +39,7 @@ public class Lamp implements AnimatedObject, TexturedObject {
 		
 		float[] matAmbientDiffuse = { 0.1f, 0.1f, 0.1f, 1.0f };
 		float[] matSpecular = { 0.0f, 0.0f, 0.0f, 0.0f };
-		float[] matShininess = { 1.0f };
+		float[] matShininess = { 0.2f };
 		float[] matEmission = { 0.9f, 0.9f, 0.9f, 1.0f };
 		switchedOnMaterial.setAmbient(matAmbientDiffuse);
 		switchedOnMaterial.setSpecular(matSpecular);
@@ -117,7 +117,7 @@ public class Lamp implements AnimatedObject, TexturedObject {
 
 		// head light
 		Light light = new Light(index, new float[] { 0.25f, 0f, -0.15f, 1f });
-		light.makeSpotlight(new float[] { 2.5f, 0.0f, -0.5f, 1f }, 50f);
+		light.makeSpotlight(new float[] { 2.5f, 0.0f, -0.5f, 1f }, 40f);
 		Modification lightTranslateOne = new TranslateModification(0, -0.5, 0);
 		Modification lightRotateOne = new RotateModification(-90, 0, 0, 1.0);
 		Modification lightRotateTwo = new RotateModification(-90, 1.0, 0, 0);
