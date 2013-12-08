@@ -15,6 +15,8 @@ import com.jogamp.opengl.util.*;
 
 import javax.media.opengl.glu.GLU;
 
+import object.RenderContainer.RenderingMode;
+
 import com.jogamp.opengl.util.gl2.GLUT;
 
 public class Assignment extends Frame implements GLEventListener,
@@ -31,7 +33,7 @@ public class Assignment extends Frame implements GLEventListener,
 
 	private Checkbox checkAxes, checkTextures, checkLight0, checkJumpingLamp,
 			checkStandingLampOne, checkStandingLampTwo, checkStandingLampThree,
-			checkLyingLamp;
+			checkLyingLamp, checkRenderingMode;
 	private Button startAnim, pauseAnim, resetScene;
 	private boolean continuousAnimation = CONTINUOUS_ANIMATION;
 
@@ -79,7 +81,7 @@ public class Assignment extends Frame implements GLEventListener,
 		menuBar.add(fileMenu);
 
 		Panel p = new Panel(new GridLayout(2, 1));
-		Panel p1 = new Panel(new GridLayout(8, 3));
+		Panel p1 = new Panel(new GridLayout(9, 3));
 		checkAxes = addCheckbox(p1, "Axes On", this);
 		checkTextures = addCheckbox(p1, "Textures On", this);
 		checkLight0 = addCheckbox(p1, "Directional Light", this);
@@ -88,6 +90,7 @@ public class Assignment extends Frame implements GLEventListener,
 		checkStandingLampOne = addCheckbox(p1, "Standing Lamp Light 1", this);
 		checkStandingLampTwo = addCheckbox(p1, "Standing Lamp Light 2", this);
 		checkStandingLampThree = addCheckbox(p1, "Standing Lamp Light 3", this);
+		checkRenderingMode = addCheckbox(p1, "Immediate Render", this);
 		p.add(p1);
 		p1 = new Panel(new GridLayout(4, 1));
 		startAnim = new Button("Start animation");
@@ -178,6 +181,12 @@ public class Assignment extends Frame implements GLEventListener,
 			scene.showStandingLampLightTwo(checkStandingLampTwo.getState());
 		} else if (source == checkStandingLampThree) {
 			scene.showStandingLampLightThree(checkStandingLampThree.getState());
+		} else if (source == checkRenderingMode) {
+			if (checkRenderingMode.getState()) {
+				scene.setRenderingMode(RenderingMode.IMMEDIATE);
+			} else {
+				scene.setRenderingMode(RenderingMode.DISPLAY_LIST);
+			}
 		}
 	}
 

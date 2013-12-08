@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.media.opengl.GL2;
 
+import object.RenderContainer.RenderingMode;
+
 import com.jogamp.opengl.util.gl2.GLUT;
 
 import assignment.Material;
@@ -13,6 +15,10 @@ import assignment.Render;
 public abstract class SceneObjectRender {
 
 	protected boolean showTextures = true;
+	
+	protected boolean needToInitializeDisplayList = false;
+	
+	protected RenderingMode mode = RenderingMode.IMMEDIATE;
 
 	protected SceneObject sceneObject;
 
@@ -46,8 +52,16 @@ public abstract class SceneObjectRender {
 			initializeWithSubPartsRenders(subPart);
 		}
 	}
+	
+	protected void initializeDisplayList(GL2 gl) {
+		for (Render render : renders) {
+			render.initialiseDisplayList(gl, showTextures);
+		}
+	}
 
 	public abstract void render(GL2 gl);
+	
+	public abstract void setRenderingMode(RenderingMode mode);
 
 	protected void doMaterial(GL2 gl, Material material) {
 		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT_AND_DIFFUSE,
@@ -63,6 +77,7 @@ public abstract class SceneObjectRender {
 	public void showTextures(boolean showTextures) {
 		this.sceneObject.showTextures(showTextures);
 		this.showTextures = showTextures;
+		this.needToInitializeDisplayList = true;
 	}
 
 	public boolean getShowTextures() {

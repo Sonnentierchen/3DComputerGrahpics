@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import javax.media.opengl.GL2;
 
+import object.RenderContainer.RenderingMode;
 import object.animation.AnimationStep;
 import object.animation.Animator;
 import object.modification.Modification;
@@ -22,6 +23,10 @@ public class DynamicRender extends SceneObjectRender {
 
 	@Override
 	public void render(GL2 gl) {
+		if (needToInitializeDisplayList) {
+			initializeDisplayList(gl);
+			needToInitializeDisplayList = false;
+		}
 		Iterator<Render> renderIterator = renders.iterator();
 		Iterator<AnimationStep> animationStepIterator = animator.getAnimationStepIterator();
 		for (ObjectPart rootPart : this.sceneObject.getRootObjectParts()) {
@@ -53,12 +58,19 @@ public class DynamicRender extends SceneObjectRender {
 				this.doMaterial(gl, currentPart.getMaterial());
 				if (currentPart instanceof MeshObjectPart) {
 					Render currentRender = renderIterator.next();
-					currentRender.renderImmediateMode(gl, showTextures);
+					switch (mode) {
+					case IMMEDIATE: 
+						currentRender.renderImmediateMode(gl, showTextures);
+						break;
+					case DISPLAY_LIST:
+						currentRender.renderDisplayList(gl);
+						break;
+					}
 				} else if (currentPart instanceof LightObjectPart){
 					LightObjectPart light = (LightObjectPart) currentPart;
 					light.getLight().use(gl, glut, false);
-				} else {
-					glut.glutSolidSphere(0.20, 20, 20);
+				} else if (currentPart instanceof GlutObjectPart){
+					((GlutObjectPart) currentPart).doGlutObject(glut);
 				}
 			gl.glPopMatrix();
 
@@ -66,6 +78,14 @@ public class DynamicRender extends SceneObjectRender {
 				renderWithSubParts(gl, subPart, renderIterator, animationStepIterator);
 			}
 		gl.glPopMatrix();
+	}
+
+	@Override
+	public void setRenderingMode(RenderingMode mode) {
+		if (this.mode != mode && mode == RenderingMode.DISPLAY_LIST) {
+			needToInitializeDisplayList = true;
+		}
+		this.mode = mode;
 	}
 
 	public void startAnimation() {

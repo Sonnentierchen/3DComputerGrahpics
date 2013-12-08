@@ -12,9 +12,12 @@ import java.awt.image.*;
 
 import javax.imageio.*;
 
+import object.RenderContainer;
+import object.RenderContainer.RenderingMode;
 import object.TexturedObject;
 import object.staticobjects.Barrel;
 import object.staticobjects.Brick;
+import object.staticobjects.FuseBox;
 import object.staticobjects.Room;
 
 import com.jogamp.opengl.util.awt.*;
@@ -80,6 +83,8 @@ public class AssignmentScene {
 	private Barrel barrelFour;
 	private Barrel barrelFive;
 	private Barrel barrelSix;
+	
+	private FuseBox fuseBox;
 
 	private Room room;
 
@@ -97,8 +102,11 @@ public class AssignmentScene {
 	private Texture lampTopTexture;
 	private Texture lampTexture;
 	private Texture brickTexture;
+	private Texture fuseBoxFront;
+	private Texture fuseBoxSides;
 	
 	private List<TexturedObject> texturedObjects = new LinkedList<TexturedObject>();
+	private List<RenderContainer> renderContainers = new LinkedList<RenderContainer>();
 
 	/**
 	 * Constructor.
@@ -142,6 +150,12 @@ public class AssignmentScene {
 		lampTopTexture = loadTexture(gl, TEXTURE_FOLDER + "lamp_top.jpg");
 		lampTexture = loadTexture(gl, TEXTURE_FOLDER + "lamp_body.jpg");
 		brickTexture = loadTexture(gl, TEXTURE_FOLDER + "brick.jpg");
+		fuseBoxFront = loadTexture(gl, TEXTURE_FOLDER + "fuse_box_front.jpg");
+		fuseBoxSides = loadTexture(gl, TEXTURE_FOLDER + "fuse_box_side.jpg");
+		
+		fuseBox = new FuseBox(new Texture[] { fuseBoxFront, fuseBoxSides,
+				fuseBoxSides, fuseBoxSides, fuseBoxSides },
+				20, 20);
 
 		room = new Room(new Texture[] { floorTexture, wallOneTexture,
 				wallTwoTexture, wallThreeTexture, wallFourTexture }, 8, 10,
@@ -207,6 +221,27 @@ public class AssignmentScene {
 		texturedObjects.add(lampTwo);
 		texturedObjects.add(lampThree);
 		texturedObjects.add(lampFour);
+		
+		renderContainers.add(room);
+		renderContainers.add(brickOne);
+		renderContainers.add(brickTwo);
+		renderContainers.add(brickThree);
+		renderContainers.add(brickFour);
+		renderContainers.add(brickFive);
+		renderContainers.add(brickSix);
+
+		renderContainers.add(barrelOne);
+		renderContainers.add(barrelTwo);
+		renderContainers.add(barrelThree);
+		renderContainers.add(barrelFour);
+		renderContainers.add(barrelFive);
+		renderContainers.add(barrelSix);
+		
+		renderContainers.add(jumpingLamp);
+		renderContainers.add(lampOne);
+		renderContainers.add(lampTwo);
+		renderContainers.add(lampThree);
+		renderContainers.add(lampFour);
 		/* end of own code */
 	}
 
@@ -356,6 +391,12 @@ public class AssignmentScene {
 			texturedObject.showTextures(showTextures);
 		}
 	}
+	
+	public void setRenderingMode(RenderingMode mode) {
+		for (RenderContainer renderContainer : renderContainers) {
+			renderContainer.setRenderingMode(mode);
+		}
+	}
 
 	private void doLight(GL2 gl) {
 		gl.glPushMatrix();
@@ -387,6 +428,14 @@ public class AssignmentScene {
 		if (objectsOn) { // Render the objects
 
 			room.render(gl);
+			
+			gl.glPushMatrix();
+				gl.glScaled(2.0, 2.0, 2.0);
+				gl.glTranslated(-2.5, 1.4, 1.3);
+				gl.glRotated(90, 0, 1.00, 0);
+				gl.glRotated(90, 1.0, 0, 0);
+				fuseBox.render(gl);
+			gl.glPopMatrix();
 
 			// Draw barrels
 			gl.glPushMatrix();

@@ -4,9 +4,11 @@ import javax.media.opengl.GL2;
 
 import object.MeshObjectPart;
 import object.ObjectPart;
+import object.RenderContainer;
 import object.SceneObject;
 import object.StaticRender;
 import object.TexturedObject;
+import object.RenderContainer.RenderingMode;
 import object.modification.Modification;
 import object.modification.TranslateModification;
 import object.modification.RotateModification;
@@ -15,7 +17,7 @@ import assignment.ProceduralMeshFactory;
 
 import com.jogamp.opengl.util.texture.Texture;
 
-public class Room implements TexturedObject {
+public class Room implements TexturedObject, RenderContainer {
 
 	private StaticRender render;
 
@@ -90,8 +92,14 @@ public class Room implements TexturedObject {
 		this.render.showTextures(showTextures);
 	}
 	
+	@Override
 	public void render(GL2 gl) {
 		render.render(gl);
+	}
+
+	@Override
+	public void setRenderingMode(RenderingMode mode) {
+		this.render.setRenderingMode(mode);
 	}
 
 }

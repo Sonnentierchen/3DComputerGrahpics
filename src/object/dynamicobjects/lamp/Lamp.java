@@ -12,35 +12,39 @@ import com.jogamp.opengl.util.texture.Texture;
 
 import object.dynamicobjects.AnimatedObject;
 import object.DynamicRender;
-import object.GlutSphereObjectPart;
+import object.GlutObjectPart;
 import object.LightObjectPart;
 import object.MeshObjectPart;
 import object.ObjectPart;
+import object.RenderContainer;
 import object.SceneObject;
 import object.TexturedObject;
+import object.RenderContainer.RenderingMode;
 import object.animation.Animator;
 import object.modification.Modification;
 import object.modification.RotateModification;
 import object.modification.ScaleModification;
 import object.modification.TranslateModification;
 
-public class Lamp implements AnimatedObject, TexturedObject {
-	
+public class Lamp implements AnimatedObject, TexturedObject, RenderContainer {
+
 	private static Material switchedOnMaterial = new Material();
-	
+
 	private static final Material switchedOffMaterial = new Material();
 
 	private DynamicRender render;
+	
+	private RenderingMode mode = RenderingMode.IMMEDIATE;
 
 	public Lamp(int index, Texture[] textures, int slices, int stacks) {
 		if (textures.length != 6) {
 			throw new IllegalArgumentException("Textures count not equal 6");
 		}
-		
+
 		float[] matAmbientDiffuse = { 0.1f, 0.1f, 0.1f, 1.0f };
 		float[] matSpecular = { 0.0f, 0.0f, 0.0f, 0.0f };
 		float[] matShininess = { 0.2f };
-		float[] matEmission = { 0.9f, 0.9f, 0.9f, 1.0f };
+		float[] matEmission = { 0.9f, 0.5f, 0.0f, 1.0f };
 		switchedOnMaterial.setAmbient(matAmbientDiffuse);
 		switchedOnMaterial.setSpecular(matSpecular);
 		switchedOnMaterial.setShininess(matShininess[0]);
@@ -87,11 +91,12 @@ public class Lamp implements AnimatedObject, TexturedObject {
 		Modification upperJointScale = new ScaleModification(0.18, 0.18, 0.15);
 		Modification upperJointGlobalTranslate = new TranslateModification(0,
 				1.3, 0);
-		Modification upperJointGlobalRotate = new RotateModification(-10, 0,
-				0, 1.0);
+		Modification upperJointGlobalRotate = new RotateModification(-10, 0, 0,
+				1.0);
 		ObjectPart upperJoint = new MeshObjectPart(upperJointMesh, textures[3],
 				new Modification[] { upperJointTranslate, upperJointScale },
-				new Modification[] { upperJointGlobalTranslate, upperJointGlobalRotate });
+				new Modification[] { upperJointGlobalTranslate,
+						upperJointGlobalRotate });
 
 		// upper arm
 		Mesh upperArmMesh = ProceduralMeshFactory.createCylinder(slices,
@@ -116,7 +121,10 @@ public class Lamp implements AnimatedObject, TexturedObject {
 				new Modification[] { headGlobalTranslate, headGlobalRotate });
 
 		// head light
-		Light light = new Light(index, new float[] { 0.25f, 0f, -0.15f, 1f });
+		Light light = new Light(index, new float[] { 0.25f, 0f, -0.15f, 1f },
+				switchedOnMaterial.getAmbient(),
+				switchedOnMaterial.getDiffuse(),
+				switchedOnMaterial.getSpecular(), true);
 		light.makeSpotlight(new float[] { 2.5f, 0.0f, -0.5f, 1f }, 40f);
 		Modification lightTranslateOne = new TranslateModification(0, -0.5, 0);
 		Modification lightRotateOne = new RotateModification(-90, 0, 0, 1.0);
@@ -132,9 +140,9 @@ public class Lamp implements AnimatedObject, TexturedObject {
 		// bulb
 		Modification bulbScaleOne = new ScaleModification(1.1, 1.1, 1.1);
 		Modification bulbScaleTwo = new ScaleModification(0.5, 1.0, 1.0);
-		GlutSphereObjectPart bulb = new GlutSphereObjectPart(switchedOnMaterial,
-				new Modification[] { bulbScaleOne, bulbScaleTwo },
-				new Modification[0]);
+		GlutObjectPart bulb = new GlutObjectPart(
+				switchedOnMaterial, new Modification[] { bulbScaleOne,
+						bulbScaleTwo }, new Modification[0]);
 
 		// stack together
 		lightPart.addSubPart(bulb);
@@ -148,7 +156,7 @@ public class Lamp implements AnimatedObject, TexturedObject {
 		Animator jumpAnimtor = new JumpLampAnimator();
 		render = new DynamicRender(sceneObject, jumpAnimtor);
 	}
-	
+
 	public void showLight(boolean showLight) {
 		SceneObject sceneObject = render.getSceneObject();
 		sceneObject.showLight(showLight);
@@ -156,12 +164,19 @@ public class Lamp implements AnimatedObject, TexturedObject {
 		for (int i = 0; i < 8; i++) {
 			materials[i] = new Material();
 		}
-		materials[7] = (showLight ? (Material) switchedOnMaterial.clone() : (Material) switchedOffMaterial.clone());
+		materials[7] = (showLight ? (Material) switchedOnMaterial.clone()
+				: (Material) switchedOffMaterial.clone());
 		sceneObject.setMaterials(materials);
 	}
-	
+
+	@Override
 	public void render(GL2 gl) {
 		render.render(gl);
+	}
+
+	@Override
+	public void setRenderingMode(RenderingMode mode) {
+		this.mode = mode;
 	}
 
 	@Override

@@ -1,18 +1,24 @@
 package object;
 
+import com.jogamp.opengl.util.gl2.GLUT;
+
 import object.modification.Modification;
 import assignment.Material;
 
-public class GlutSphereObjectPart extends ObjectPart {
+public class GlutObjectPart extends ObjectPart {
 
-	public GlutSphereObjectPart(Modification[] modifications,
+	public GlutObjectPart(Modification[] modifications,
 			Modification[] globalModifications) {
 		super(modifications, globalModifications);
 	}
 
-	public GlutSphereObjectPart(Material material,
+	public GlutObjectPart(Material material,
 			Modification[] modifications, Modification[] globalModifications) {
 		super(material, modifications, globalModifications);
+	}
+	
+	public void doGlutObject(GLUT glut) {
+		glut.glutSolidSphere(0.20, 20, 20);
 	}
 
 }

@@ -66,9 +66,6 @@ public class JumpLampAnimator implements Animator {
 			double rotate = Math.sin(-2 * (sinusDegree));
 			Modification rotateMod = new RotateModification(-rotate * 30, 0, 0,
 					1.0);
-			//Modification translateFeet = new TranslateModification(
-					//Math.sin(sinusDegree) / 2, 0, 0);
-			//steps.add(translateFeet);
 			if (needToRotateBase - 0.5 > 0) {
 			}
 			steps.add(rotateMod);
@@ -98,9 +95,6 @@ public class JumpLampAnimator implements Animator {
 			currentRotationLowerJoint = rotate * 20;
 		} else {
 			rotateMod = new RotateModification(rotate * 60 * 0, 0, 0, 1.0);
-			// Modification baseRotationCompensation = new
-			// TranslateModification(0, Math.sin(sinusDegree) * 2, 0);
-			// steps.add(baseRotationCompensation);
 		}
 		steps.add(rotateMod);
 		return new AnimationStep(steps);

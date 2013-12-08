@@ -11,6 +11,7 @@ import com.jogamp.opengl.util.texture.Texture;
 import object.DynamicRender;
 import object.MeshObjectPart;
 import object.ObjectPart;
+import object.RenderContainer;
 import object.SceneObject;
 import object.TexturedObject;
 import object.animation.Animator;
@@ -19,9 +20,11 @@ import object.modification.Modification;
 import object.modification.ScaleModification;
 import object.modification.TranslateModification;
 
-public class DynamicBarrel implements TexturedObject, AnimatedObject {
+public class DynamicBarrel implements TexturedObject, AnimatedObject, RenderContainer {
 	
 	private DynamicRender render;
+	
+	private RenderingMode mode = RenderingMode.IMMEDIATE;
 
 	public DynamicBarrel(Texture texture, int slices, int stacks) {
 		Mesh mesh = ProceduralMeshFactory.createCylinder(slices, stacks, true);
@@ -42,8 +45,14 @@ public class DynamicBarrel implements TexturedObject, AnimatedObject {
 		this.render.showTextures(showTextures);
 	}
 	
+	@Override
 	public void render(GL2 gl) {
 		this.render.render(gl);
+	}
+
+	@Override
+	public void setRenderingMode(RenderingMode mode) {
+		this.render.setRenderingMode(mode);
 	}
 
 	@Override

@@ -9,13 +9,15 @@ import com.jogamp.opengl.util.texture.Texture;
 
 import object.MeshObjectPart;
 import object.ObjectPart;
+import object.RenderContainer;
 import object.SceneObject;
 import object.StaticRender;
 import object.TexturedObject;
+import object.RenderContainer.RenderingMode;
 import object.modification.Modification;
 import object.modification.TranslateModification;
 
-public class Brick implements TexturedObject {
+public class Brick implements TexturedObject, RenderContainer {
 
 	private StaticRender render;
 
@@ -36,8 +38,14 @@ public class Brick implements TexturedObject {
 		this.render.showTextures(showTextures);
 	}
 	
+	@Override
 	public void render(GL2 gl) {
 		this.render.render(gl);
+	}
+
+	@Override
+	public void setRenderingMode(RenderingMode mode) {
+		this.render.setRenderingMode(mode);
 	}
 
 }
