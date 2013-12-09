@@ -13,11 +13,7 @@ import javax.media.opengl.awt.GLCanvas;
 
 import com.jogamp.opengl.util.*;
 
-import javax.media.opengl.glu.GLU;
-
 import object.RenderContainer.RenderingMode;
-
-import com.jogamp.opengl.util.gl2.GLUT;
 
 public class Assignment extends Frame implements GLEventListener,
 		ActionListener, ItemListener, MouseMotionListener {

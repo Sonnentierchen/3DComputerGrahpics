@@ -17,10 +17,30 @@ import object.RenderContainer.RenderingMode;
 import object.modification.Modification;
 import object.modification.TranslateModification;
 
+/** 
+ * 
+ * I declare that this code is my own work 
+ * Author Florian Blume, fblume1@sheffield.ac.uk 
+ * 
+ */
+
+/**
+ * Class Brick is a 3D brick.
+ * @author zzb13fb
+ *
+ */
 public class Brick implements TexturedObject, RenderContainer {
 
+	/**
+	 * The render of the brick.
+	 */
 	private StaticRender render;
 
+	/**
+	 * Constructor of class Brick.
+	 * 
+	 * @param texture the texture of the brick.
+	 */
 	public Brick(Texture texture) {
 		Mesh mesh = ProceduralMeshFactory.createHardCube(0.3, 0.2, 0.5);
 		Modification translate = new TranslateModification(0, 0.1, 0);
@@ -30,10 +50,12 @@ public class Brick implements TexturedObject, RenderContainer {
 		render = new StaticRender(sceneObject);
 	}
 	
+	@Override
 	public void setTextures(Texture[] textures) {
 		this.render.getSceneObject().setTextures(textures);
 	}
 	
+	@Override
 	public void showTextures(boolean showTextures) {
 		this.render.showTextures(showTextures);
 	}

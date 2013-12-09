@@ -278,6 +278,13 @@ public class ProceduralMeshFactory {
 		return createMeshCylinder(slices, stacks, caps, true);
 	}
 
+	/** 
+	 * The following code has partly been altered to match a certain texture format:
+	 * The cylinder uses the lower half of the texture and the caps the upper half.
+	 * They expect two circles that divide the upper half evenly between them.
+	 * 
+	 * Author: Florian Blume, fblume1@sheffield.ac.uk.
+	 */
 	private static Mesh createMeshCylinder(int slices, int stacks,
 			boolean caps, boolean textured) {
 		if (stacks < 2)
@@ -393,8 +400,20 @@ public class ProceduralMeshFactory {
 		return mesh;
 	}
 
-	/* I declare that this code is my own work */
-	/* Author Florian Blume, fblume1@sheffield.ac.uk */
+	/** 
+	 * 
+	 * I declare that this code is my own work 
+	 * Author Florian Blume, fblume1@sheffield.ac.uk 
+	 * 
+	 */
+	
+	/**
+	 * Creates a cone with a capped end (the cap can be shown or not).
+	 * 
+	 * @param slices the number of slices along the cone
+	 * @param cap indicates whether the cap should be shown or not
+	 * @return the mesh of the cone
+	 */
 	public static Mesh createCone(int slices, boolean cap) {
 		return createCone(slices, cap, true);
 	}
@@ -415,6 +434,9 @@ public class ProceduralMeshFactory {
 		Triangle[] triangles = new Triangle[4 * slices + (cap ? slices : 0)];
 
 		// Create the cylinder length facets
+		/* The lower two thirds of the texture are used for the cylinder of the cone
+		 * The upper third (and centred) is used for the cap.
+		 * */
 		for (r = 0; r < slices; r++) {
 			s = Math.sin(angle = r * stepr) * 0.23;
 			c = Math.cos(angle) * 0.23;
@@ -423,23 +445,16 @@ public class ProceduralMeshFactory {
 			vertices[r + 2 * end_offset] = new Vertex(s, c, 0, 1.0 - (double) r
 					/ (slices - 1), 0.6);
 
+			/* Creates the inner cylinder of the cone */
 			s = Math.sin(angle = r * stepr) * 0.5;
 			c = Math.cos(angle) * 0.5;
 			vertices[r + end_offset] = new Vertex(s, c, 1.0, 1.0 - (double) r
 					/ (slices - 1), 0.0);
 			vertices[r + 3 * end_offset] = new Vertex(s, c, 1.0, 1.0
 					- (double) r / (slices - 1), 0.0);
-			/*
-			if (cap) {
-				double texu = 0.5 - Math.sin(r * texDegree) * 0.15;
-				double texv = 0.85 - Math.cos(r * texDegree) * 0.15;
-				System.out.println(texu + " texv:" + texv);
-				int cap_offset = 4 * end_offset;
-				vertices[r + cap_offset] = new Vertex(s, c, 0, 1 - texu, texv);
-			}
-			*/
 		}
 
+		/* Creates all triangles of the cone */
 		for (z = 0; z < slices; z++) {
 			int next_index = (z + 1 < slices ? z + 1 : 0);
 			triangles[z] = new Triangle(z, next_index, z + end_offset);
@@ -452,19 +467,12 @@ public class ProceduralMeshFactory {
 					* end_offset);
 		}
 
-		/*
-		 * if (cap) { vertices[vertices.length - 1] = new Vertex(0.0, 0.0, 0,
-		 * 0.5, 0.85); int cap_offset = 4 * end_offset; for (int i = 0; i <
-		 * slices; i++) { int next_index = (i + 1 < slices ? i + 1 : 0);
-		 * triangles[i + cap_offset] = new Triangle(i, next_index,
-		 * vertices.length - 1); } }
-		 */
-
 		if (cap) {
 			int ep1 = vertices.length - 1;
 			double texu = 0.5;
 			double texv = 0.76;
 
+			/* The centre of the cap. Only one cap is neccessary, since it's a cone */
 			vertices[ep1] = new Vertex(0.0, 0.0, 0.0, 0.5, 0.76);
 			int lowerstack = 4 * slices;
 			vertices[lowerstack] = (Vertex) vertices[0].clone();
@@ -495,6 +503,6 @@ public class ProceduralMeshFactory {
 
 		return mesh;
 	}
-	/* end of own code */
+	/** end of own code */
 
 }

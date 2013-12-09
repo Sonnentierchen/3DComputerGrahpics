@@ -1,0 +1,1 @@
+java -cp ".;/jogl2/jar/gluegen-rt.jar;/jogl2/jar/jogl-all.jar;src" assignment.Assignment

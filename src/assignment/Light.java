@@ -239,6 +239,15 @@ public class Light implements Cloneable {
 		gl.glLineWidth(1);
 		gl.glEnable(GL2.GL_LIGHTING);
 	}
+	
+	/* I declare that this code is my own work */
+	/* Author Florian Blume, fblume1@sheffield.ac.uk */
+	public void setMaterial(Material material) {
+		this.ambient = material.getAmbient().clone();
+		this.diffuse = material.getDiffuse().clone();
+		this.specular = material.getSpecular().clone();
+	}
+	/* End of own code */
 
 	public String toString() {
 		return "[" + position[0] + ", " + position[1] + ", " + position[2]

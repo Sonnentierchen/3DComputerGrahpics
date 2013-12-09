@@ -10,7 +10,7 @@ import assignment.Vertex;
 
 import com.jogamp.opengl.util.texture.Texture;
 
-import object.dynamicobjects.AnimatedObject;
+import object.animation.AnimatedObject;
 import object.DynamicRender;
 import object.GlutObjectPart;
 import object.LightObjectPart;
@@ -28,27 +28,53 @@ import object.modification.TranslateModification;
 
 public class Lamp implements AnimatedObject, TexturedObject, RenderContainer {
 
+	/**
+	 * The material for the light when switched on.
+	 */
 	private static Material switchedOnMaterial = new Material();
 
+	/**
+	 * The material for the bulb when switched on.
+	 */
+	private static Material switchedOnBulbMaterial = new Material();
+
+	/**
+	 * The material for the light and bulb when switched off.
+	 */
 	private static final Material switchedOffMaterial = new Material();
 
+	/**
+	 * The render of this lamp.
+	 */
 	private DynamicRender render;
-	
-	private RenderingMode mode = RenderingMode.IMMEDIATE;
 
+	/**
+	 * Constructor of class bulb.
+	 * 
+	 * @param index the index of the light
+	 * @param textures the textures of the lamp
+	 * @param slices the number of slices of the arms, joints and the cone
+	 * @param stacks the number of stacks of the arms, joints and the cone
+	 */
 	public Lamp(int index, Texture[] textures, int slices, int stacks) {
 		if (textures.length != 6) {
 			throw new IllegalArgumentException("Textures count not equal 6");
 		}
 
-		float[] matAmbientDiffuse = { 0.1f, 0.1f, 0.1f, 1.0f };
+		float[] matAmbient = { 0.1f, 0.1f, 0.1f, 1.0f };
+		float[] matDiffuse = { 1.0f, 1.0f, 0.3f, 1.0f };
 		float[] matSpecular = { 0.0f, 0.0f, 0.0f, 0.0f };
 		float[] matShininess = { 0.2f };
-		float[] matEmission = { 0.9f, 0.5f, 0.0f, 1.0f };
-		switchedOnMaterial.setAmbient(matAmbientDiffuse);
+		float[] matEmission = { 1.0f, 1.0f, 0.6f, 1.0f };
+		switchedOnMaterial.setAmbient(matAmbient);
+		switchedOnMaterial.setDiffuse(matDiffuse);
 		switchedOnMaterial.setSpecular(matSpecular);
 		switchedOnMaterial.setShininess(matShininess[0]);
 		switchedOnMaterial.setEmission(matEmission);
+
+		switchedOnBulbMaterial = (Material) switchedOnMaterial.clone();
+		switchedOnBulbMaterial
+				.setDiffuse(new float[] { 1.0f, 1.0f, 1.3f, 1.0f });
 
 		// base
 		Mesh baseMesh = ProceduralMeshFactory.createCylinder(slices, stacks,
@@ -140,11 +166,12 @@ public class Lamp implements AnimatedObject, TexturedObject, RenderContainer {
 		// bulb
 		Modification bulbScaleOne = new ScaleModification(1.1, 1.1, 1.1);
 		Modification bulbScaleTwo = new ScaleModification(0.5, 1.0, 1.0);
-		GlutObjectPart bulb = new GlutObjectPart(
-				switchedOnMaterial, new Modification[] { bulbScaleOne,
-						bulbScaleTwo }, new Modification[0]);
+		Modification bulbScaleThree = new ScaleModification(0.18, 0.18, 0.18);
+		GlutObjectPart bulb = new GlutObjectPart(switchedOnMaterial,
+				new Modification[] { bulbScaleOne, bulbScaleTwo, bulbScaleThree },
+				new Modification[0]);
 
-		// stack together
+		// stack together and create tree structured object
 		lightPart.addSubPart(bulb);
 		head.addSubPart(lightPart);
 		upperArm.addSubPart(head);
@@ -157,6 +184,11 @@ public class Lamp implements AnimatedObject, TexturedObject, RenderContainer {
 		render = new DynamicRender(sceneObject, jumpAnimtor);
 	}
 
+	/**
+	 * Shows or hides the light of this lamp.
+	 * 
+	 * @param showLight shows or hides the light of this lamp
+	 */
 	public void showLight(boolean showLight) {
 		SceneObject sceneObject = render.getSceneObject();
 		sceneObject.showLight(showLight);
@@ -164,7 +196,12 @@ public class Lamp implements AnimatedObject, TexturedObject, RenderContainer {
 		for (int i = 0; i < 8; i++) {
 			materials[i] = new Material();
 		}
-		materials[7] = (showLight ? (Material) switchedOnMaterial.clone()
+		/*
+		 * Sets the material of the bulb and light accordingly to the state of the light
+		 */
+		materials[6] = (showLight ? (Material) switchedOnMaterial.clone()
+				: (Material) switchedOffMaterial.clone());
+		materials[7] = (showLight ? (Material) switchedOnBulbMaterial.clone()
 				: (Material) switchedOffMaterial.clone());
 		sceneObject.setMaterials(materials);
 	}
@@ -176,7 +213,7 @@ public class Lamp implements AnimatedObject, TexturedObject, RenderContainer {
 
 	@Override
 	public void setRenderingMode(RenderingMode mode) {
-		this.mode = mode;
+		this.render.setRenderingMode(mode);
 	}
 
 	@Override
