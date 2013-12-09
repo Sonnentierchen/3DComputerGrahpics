@@ -111,6 +111,13 @@ public class AssignmentScene {
 	private Texture barrelSixTexture;
 	private Texture lampTopTexture;
 	private Texture lampTexture;
+	private Texture lampTextureStretched;
+	private Texture lampTextureRust;
+	private Texture lampTextureRustStretched;
+	private Texture lampTextureRustThree;
+	private Texture lampTextureRustThreeStretched;
+	private Texture lampTextureRustFour;
+	private Texture lampTextureRustFourStretched;
 	private Texture brickTexture;
 	private Texture fuseBoxFront;
 	private Texture fuseBoxSides;
@@ -169,7 +176,7 @@ public class AssignmentScene {
 	}
 
 	private void loadAllTextures(GL2 gl) {
-		floorTexture = loadTexture(gl, TEXTURE_FOLDER + "floor.jpg");
+		floorTexture = loadTexture(gl, TEXTURE_FOLDER + "floor6.jpg");
 		wallOneTexture = loadTexture(gl, TEXTURE_FOLDER + "wall1.jpg");
 		wallTwoTexture = loadTexture(gl, TEXTURE_FOLDER + "wall2.jpg");
 		wallThreeTexture = loadTexture(gl, TEXTURE_FOLDER + "wall3.jpg");
@@ -187,6 +194,13 @@ public class AssignmentScene {
 				+ "barrel_radioactive.jpg");
 		lampTopTexture = loadTexture(gl, TEXTURE_FOLDER + "lamp_top.jpg");
 		lampTexture = loadTexture(gl, TEXTURE_FOLDER + "lamp_body.jpg");
+		lampTextureStretched = loadTexture(gl, TEXTURE_FOLDER + "lamp_body_stretched.jpg");
+		lampTextureRust = loadTexture(gl, TEXTURE_FOLDER + "lamp_rust.jpg");
+		lampTextureRustStretched = loadTexture(gl, TEXTURE_FOLDER + "lamp_rust.jpg");
+		lampTextureRustThree = loadTexture(gl, TEXTURE_FOLDER + "lamp_rust5.jpg");
+		lampTextureRustThreeStretched = loadTexture(gl, TEXTURE_FOLDER + "lamp_rust6.jpg");
+		lampTextureRustFour = loadTexture(gl, TEXTURE_FOLDER + "lamp_rust7.jpg");
+		lampTextureRustFourStretched = loadTexture(gl, TEXTURE_FOLDER + "lamp_rust7.jpg");
 		brickTexture = loadTexture(gl, TEXTURE_FOLDER + "brick.jpg");
 		fuseBoxFront = loadTexture(gl, TEXTURE_FOLDER + "fuse_box_front.jpg");
 		fuseBoxSides = loadTexture(gl, TEXTURE_FOLDER + "fuse_box_side.jpg");
@@ -216,36 +230,36 @@ public class AssignmentScene {
 
 	private void createLamps(GL2 gl) {
 		jumpingLamp = new Lamp(GL2.GL_LIGHT2, new Texture[] { lampTexture,
-				lampTexture, lampTexture, lampTexture, lampTexture,
+				lampTexture, lampTextureStretched, lampTexture, lampTextureStretched,
 				lampTopTexture }, DEFAULT_SLICES, DEFAULT_SLICES);
 		/* Creates a new animator for the lamp, that makes it jump. */
 		lampAnimator = new JumpLampAnimator();
 		jumpingLamp.setAnimator(lampAnimator);
 
-		lampOne = new Lamp(GL2.GL_LIGHT3, new Texture[] { lampTexture,
-				lampTexture, lampTexture, lampTexture, lampTexture,
-				lampTopTexture }, DEFAULT_SLICES, DEFAULT_SLICES);
+		lampOne = new Lamp(GL2.GL_LIGHT3, new Texture[] { lampTextureRust,
+				lampTextureRust, lampTextureRustStretched, lampTextureRust, lampTextureRustStretched,
+				lampTextureRust }, DEFAULT_SLICES, DEFAULT_SLICES);
 		HeadLightLampAnimator headLightAnimator = new HeadLightLampAnimator();
 		/* Creates a new animator for the lamp that makes it bend it's head. */
 		lampOne.setAnimator(headLightAnimator);
 		lampOne.startAnimation();
 
-		lampTwo = new Lamp(GL2.GL_LIGHT4, new Texture[] { lampTexture,
-				lampTexture, lampTexture, lampTexture, lampTexture,
-				lampTopTexture }, DEFAULT_SLICES, DEFAULT_SLICES);
+		lampTwo = new Lamp(GL2.GL_LIGHT4, new Texture[] { lampTextureRust,
+				lampTextureRust, lampTextureRustStretched, lampTextureRust, lampTextureRustStretched,
+				lampTextureRust }, DEFAULT_SLICES, DEFAULT_SLICES);
 
-		lampThree = new Lamp(GL2.GL_LIGHT5, new Texture[] { lampTexture,
-				lampTexture, lampTexture, lampTexture, lampTexture,
-				lampTopTexture }, DEFAULT_SLICES, DEFAULT_SLICES);
+		lampThree = new Lamp(GL2.GL_LIGHT5, new Texture[] { lampTextureRustThree,
+				lampTextureRustThree, lampTextureRustThreeStretched, lampTextureRustThree, lampTextureRustThreeStretched,
+				lampTextureRustThree }, DEFAULT_SLICES, DEFAULT_SLICES);
 		HeadLightLampAnimator headLightAnimatorBended = new HeadLightLampAnimator();
 		headLightAnimatorBended.setBendingAngle(-30);
 		headLightAnimatorBended.setLookupAngle(70);
 		lampThree.setAnimator(headLightAnimatorBended);
 		lampThree.startAnimation();
 
-		lampFour = new Lamp(GL2.GL_LIGHT6, new Texture[] { lampTexture,
-				lampTexture, lampTexture, lampTexture, lampTexture,
-				lampTopTexture }, DEFAULT_SLICES, DEFAULT_SLICES);
+		lampFour = new Lamp(GL2.GL_LIGHT6, new Texture[] { lampTextureRustFour,
+				lampTextureRustFour, lampTextureRustFourStretched, lampTextureRustFour, lampTextureRustFourStretched,
+				lampTextureRustFour }, DEFAULT_SLICES, DEFAULT_SLICES);
 		HeadLightLampAnimator headLightAnimator2 = new HeadLightLampAnimator();
 		lampFour.setAnimator(headLightAnimator2);
 		lampFour.startAnimation();
@@ -288,7 +302,7 @@ public class AssignmentScene {
 		Texture tex = null;
 		// since file loading is involved, must use try...catch
 		try {
-			// File f = new File("textures\\placeholder.jpg");
+			//File f = new File("textures\\placeholder.jpg");
 			File f = new File(filename);
 
 			BufferedImage img = ImageIO.read(f); // read file into BufferedImage
@@ -360,24 +374,17 @@ public class AssignmentScene {
 		 * When the lamp reaches the area between 105 and 160 degrees it has to
 		 * perform the higher jump to get over the barrel.
 		 */
-		if (currentLampPosition % 360 > 105 && currentLampPosition % 360 < 160) {
+		if (currentLampPosition % 360 > 100 && currentLampPosition % 360 < 140 && Math.sin(lampRotate) >= 0) {
 			lampJumpHeight = 2.0;
-			/*
-			 * Reduce the animation speed temporarily because the animator of
-			 * the lamp uses the jump to alter the speed of the animation and
-			 * would be too fast otherwise
-			 */
-			//lampSpeed = 0.7;
-		} else {
+		} else if (currentLampPosition % 360 > 140 && currentLampPosition % 360 < 220 && Math.sin(lampRotate) >= 0) {
 			lampJumpHeight = 1.0;
-			lampSpeed = 1.0;
 		}
 		/*
 		 * To prevent a lagging animation, only when the lamp reaches the ground
 		 * again, set the jump height and speed.
 		 */
-		lampAnimator.scheduleSetJumpHeight(lampJumpHeight);
-		lampAnimator.scheduleSetAnimationSpeed(lampSpeed);
+		lampAnimator.setJumpHeight(lampJumpHeight);
+		lampAnimator.setAnimationSpeed(lampSpeed);
 
 		/*
 		 * Only move the lamp when it's in air and therefore the sine of
@@ -390,15 +397,12 @@ public class AssignmentScene {
 			 */
 			double lampJumpHeight_;
 			if (lampJumpHeight < 2) {
-				lampJumpHeight_ = lampJumpHeight / 2;
+				lampJumpHeight_ = lampJumpHeight / 4;
 			} else {
-				lampJumpHeight_ = lampJumpHeight;
+				lampJumpHeight_ = lampJumpHeight / 2;
 			}
-			currentLampPosition += -Math.sin(lampRotate % (2 * Math.PI)) * 4
+			currentLampPosition += -Math.sin(lampRotate % (2 * Math.PI)) * 5
 					* lampJumpHeight_;
-		} else {
-			// currentLampRotate += Math.sin(lampRotate % (2 * Math.PI)) * 4
-			// * lampJumpHeight;
 		}
 		lampRotate += LAMP_INC * lampSpeed;
 

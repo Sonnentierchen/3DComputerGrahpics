@@ -142,7 +142,7 @@ public class Lamp implements AnimatedObject, TexturedObject, RenderContainer {
 		Modification headGlobalTranslate = new TranslateModification(0.1, 1.28,
 				0);
 		Modification headGlobalRotate = new RotateModification(-85, 0, 0, 1.0);
-		ObjectPart head = new MeshObjectPart(headMesh, textures[4],
+		ObjectPart head = new MeshObjectPart(headMesh, textures[5],
 				new Modification[] { headRotate, headScale },
 				new Modification[] { headGlobalTranslate, headGlobalRotate });
 

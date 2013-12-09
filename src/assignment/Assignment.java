@@ -93,10 +93,10 @@ public class Assignment extends Frame implements GLEventListener,
 		p2.add(new Panel());
 		p2.add(new Panel());
 		checkLight0 = addCheckbox(p2, "Directional Light", this);
-		checkJumpingLamp = addCheckbox(p2, "Jumping Lamp Light", this);
-		checkLyingLamp = addCheckbox(p2, "Lying Lamp Light", this);
 		checkStandingLampOne = addCheckbox(p2, "Standing Lamp Light 1", this);
+		checkJumpingLamp = addCheckbox(p2, "Jumping Lamp Light", this);
 		checkStandingLampTwo = addCheckbox(p2, "Standing Lamp Light 2", this);
+		checkLyingLamp = addCheckbox(p2, "Lying Lamp Light", this);
 		checkStandingLampThree = addCheckbox(p2, "Standing Lamp Light 3", this);
 		checkGlobalLight = addCheckbox(p2, "Global Light", this);
 		p1.add(p2);
@@ -107,7 +107,7 @@ public class Assignment extends Frame implements GLEventListener,
 		startAnim = new Button("Start animation");
 		startAnim.setActionCommand("StartAnim");
 		startAnim.addActionListener(this);
-		p3.add(startAnim);
+		p3.add(startAnim, "Center");
 		pauseAnim = new Button("Pause animation");
 		pauseAnim.setActionCommand("PauseAnim");
 		pauseAnim.addActionListener(this);
