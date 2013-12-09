@@ -201,48 +201,36 @@ public class AssignmentScene {
 		lampFour.setAnimator(headLightAnimator2);
 		lampFour.startAnimation();
 		
-		texturedObjects.add(room);
-		texturedObjects.add(brickOne);
-		texturedObjects.add(brickTwo);
-		texturedObjects.add(brickThree);
-		texturedObjects.add(brickFour);
-		texturedObjects.add(brickFive);
-		texturedObjects.add(brickSix);
-
-		texturedObjects.add(barrelOne);
-		texturedObjects.add(barrelTwo);
-		texturedObjects.add(barrelThree);
-		texturedObjects.add(barrelFour);
-		texturedObjects.add(barrelFive);
-		texturedObjects.add(barrelSix);
+		texturedObjects = addObjectsToList(TexturedObject.class);
 		
-		texturedObjects.add(jumpingLamp);
-		texturedObjects.add(lampOne);
-		texturedObjects.add(lampTwo);
-		texturedObjects.add(lampThree);
-		texturedObjects.add(lampFour);
-		
-		renderContainers.add(room);
-		renderContainers.add(brickOne);
-		renderContainers.add(brickTwo);
-		renderContainers.add(brickThree);
-		renderContainers.add(brickFour);
-		renderContainers.add(brickFive);
-		renderContainers.add(brickSix);
-
-		renderContainers.add(barrelOne);
-		renderContainers.add(barrelTwo);
-		renderContainers.add(barrelThree);
-		renderContainers.add(barrelFour);
-		renderContainers.add(barrelFive);
-		renderContainers.add(barrelSix);
-		
-		renderContainers.add(jumpingLamp);
-		renderContainers.add(lampOne);
-		renderContainers.add(lampTwo);
-		renderContainers.add(lampThree);
-		renderContainers.add(lampFour);
+		renderContainers = addObjectsToList(RenderContainer.class);
 		/* end of own code */
+	}
+	
+	private <T> LinkedList<T> addObjectsToList(Class<T> clazz) {
+		LinkedList<T> list = new LinkedList<T>();
+		list.add((T) room);
+		list.add((T) fuseBox);
+		list.add((T) brickOne);
+		list.add((T) brickTwo);
+		list.add((T) brickThree);
+		list.add((T) brickFour);
+		list.add((T) brickFive);
+		list.add((T) brickSix);
+
+		list.add((T) barrelOne);
+		list.add((T) barrelTwo);
+		list.add((T) barrelThree);
+		list.add((T) barrelFour);
+		list.add((T) barrelFive);
+		list.add((T) barrelSix);
+		
+		list.add((T) jumpingLamp);
+		list.add((T) lampOne);
+		list.add((T) lampTwo);
+		list.add((T) lampThree);
+		list.add((T) lampFour);
+		return list;
 	}
 
 	private Texture loadTexture(GL2 gl, String filename) {

@@ -92,7 +92,9 @@ public class Assignment extends Frame implements GLEventListener,
 		checkStandingLampThree = addCheckbox(p1, "Standing Lamp Light 3", this);
 		checkRenderingMode = addCheckbox(p1, "Immediate Render", this);
 		p.add(p1);
-		p1 = new Panel(new GridLayout(4, 1));
+		p1 = new Panel(new GridLayout(3, 1));
+		p1.add(new Panel());
+		p1.add(new Panel(new GridLayout(1, 3)));
 		startAnim = new Button("Start animation");
 		startAnim.setActionCommand("StartAnim");
 		startAnim.addActionListener(this);
@@ -105,6 +107,7 @@ public class Assignment extends Frame implements GLEventListener,
 		resetScene.setActionCommand("ResetScene");
 		resetScene.addActionListener(this);
 		p1.add(resetScene);
+		p1.add(new Panel());
 		p.add(p1);
 		add(p, "East");
 
