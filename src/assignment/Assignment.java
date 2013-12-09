@@ -29,7 +29,7 @@ public class Assignment extends Frame implements GLEventListener,
 
 	private Checkbox checkAxes, checkTextures, checkLight0, checkJumpingLamp,
 			checkStandingLampOne, checkStandingLampTwo, checkStandingLampThree,
-			checkLyingLamp, checkRenderingMode;
+			checkLyingLamp, checkGlobalLight, immediateRender, displayListRender;
 	private Button startAnim, pauseAnim, resetScene;
 	private boolean continuousAnimation = CONTINUOUS_ANIMATION;
 
@@ -77,32 +77,46 @@ public class Assignment extends Frame implements GLEventListener,
 		menuBar.add(fileMenu);
 
 		Panel p = new Panel(new GridLayout(2, 1));
-		Panel p1 = new Panel(new GridLayout(9, 3));
-		checkAxes = addCheckbox(p1, "Axes On", this);
-		checkTextures = addCheckbox(p1, "Textures On", this);
-		checkLight0 = addCheckbox(p1, "Directional Light", this);
-		checkJumpingLamp = addCheckbox(p1, "Jumping Lamp Light", this);
-		checkLyingLamp = addCheckbox(p1, "Lying Lamp Light", this);
-		checkStandingLampOne = addCheckbox(p1, "Standing Lamp Light 1", this);
-		checkStandingLampTwo = addCheckbox(p1, "Standing Lamp Light 2", this);
-		checkStandingLampThree = addCheckbox(p1, "Standing Lamp Light 3", this);
-		checkRenderingMode = addCheckbox(p1, "Immediate Render", this);
+		Panel p1 = new Panel(new GridLayout(2, 1));
+		Panel p2 = new Panel(new GridLayout(2, 2));
+		checkAxes = addCheckbox(p2, "Axes On", this);
+		checkTextures = addCheckbox(p2, "Textures On", this);
+		immediateRender = addCheckbox(p2, "Immediate Render", this);
+		displayListRender = addCheckbox(p2, "Displaylist Render", this);
+		displayListRender.setState(false);
+		p2.add(checkAxes);
+		p2.add(checkTextures);
+		p2.add(immediateRender);
+		p2.add(displayListRender);
+		p1.add(p2);
+		p2 = new Panel(new GridLayout(5, 2));
+		p2.add(new Panel());
+		p2.add(new Panel());
+		checkLight0 = addCheckbox(p2, "Directional Light", this);
+		checkJumpingLamp = addCheckbox(p2, "Jumping Lamp Light", this);
+		checkLyingLamp = addCheckbox(p2, "Lying Lamp Light", this);
+		checkStandingLampOne = addCheckbox(p2, "Standing Lamp Light 1", this);
+		checkStandingLampTwo = addCheckbox(p2, "Standing Lamp Light 2", this);
+		checkStandingLampThree = addCheckbox(p2, "Standing Lamp Light 3", this);
+		checkGlobalLight = addCheckbox(p2, "Global Light", this);
+		p1.add(p2);
 		p.add(p1);
 		p1 = new Panel(new GridLayout(3, 1));
 		p1.add(new Panel());
-		p1.add(new Panel(new GridLayout(1, 3)));
+		Panel p3 = new Panel(new GridLayout(3, 1));
 		startAnim = new Button("Start animation");
 		startAnim.setActionCommand("StartAnim");
 		startAnim.addActionListener(this);
-		p1.add(startAnim);
+		p3.add(startAnim);
 		pauseAnim = new Button("Pause animation");
 		pauseAnim.setActionCommand("PauseAnim");
 		pauseAnim.addActionListener(this);
-		p1.add(pauseAnim);
+		p3.add(pauseAnim);
 		resetScene = new Button("Reset scene");
 		resetScene.setActionCommand("ResetScene");
 		resetScene.addActionListener(this);
-		p1.add(resetScene);
+		p3.add(resetScene);
+		p1.add(p3);
 		p1.add(new Panel());
 		p.add(p1);
 		add(p, "East");
@@ -180,12 +194,14 @@ public class Assignment extends Frame implements GLEventListener,
 			scene.showStandingLampLightTwo(checkStandingLampTwo.getState());
 		} else if (source == checkStandingLampThree) {
 			scene.showStandingLampLightThree(checkStandingLampThree.getState());
-		} else if (source == checkRenderingMode) {
-			if (checkRenderingMode.getState()) {
-				scene.setRenderingMode(RenderingMode.IMMEDIATE);
-			} else {
-				scene.setRenderingMode(RenderingMode.DISPLAY_LIST);
-			}
+		} else if (source == checkGlobalLight) {
+			scene.showGlobalLight(checkGlobalLight.getState());
+		} else if (source == immediateRender) {
+			scene.setRenderingMode(RenderingMode.IMMEDIATE);
+			displayListRender.setState(false);
+		} else if (source == displayListRender) {
+			scene.setRenderingMode(RenderingMode.DISPLAY_LIST);
+			immediateRender.setState(false);
 		}
 	}
 
@@ -203,6 +219,14 @@ public class Assignment extends Frame implements GLEventListener,
 		checkJumpingLamp.setState(true);
 		scene.getLight().setSwitchedOn(true);
 		continuousAnimation = false;
+		checkLyingLamp.setState(true);
+		checkStandingLampOne.setState(true);
+		checkStandingLampThree.setState(true);
+		checkStandingLampTwo.setState(true);
+		immediateRender.setState(true);
+		checkGlobalLight.setState(true);
+		displayListRender.setState(false);
+		scene.setRenderingMode(RenderingMode.IMMEDIATE);
 		scene.reset();
 	}
 

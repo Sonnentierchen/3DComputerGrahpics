@@ -367,7 +367,7 @@ public class AssignmentScene {
 			 * the lamp uses the jump to alter the speed of the animation and
 			 * would be too fast otherwise
 			 */
-			lampSpeed = 0.7;
+			//lampSpeed = 0.7;
 		} else {
 			lampJumpHeight = 1.0;
 			lampSpeed = 1.0;
@@ -395,7 +395,7 @@ public class AssignmentScene {
 				lampJumpHeight_ = lampJumpHeight;
 			}
 			currentLampPosition += -Math.sin(lampRotate % (2 * Math.PI)) * 4
-					* lampJumpHeight_ * lampSpeed;
+					* lampJumpHeight_;
 		} else {
 			// currentLampRotate += Math.sin(lampRotate % (2 * Math.PI)) * 4
 			// * lampJumpHeight;
@@ -432,7 +432,7 @@ public class AssignmentScene {
 	}
 
 	/**
-	 * Indicates whether the light of the jumping lamp should be shown.
+	 * Sets whether the light of the jumping lamp should be shown.
 	 * 
 	 * @param showLight show or hide the light of the jumping lamp
 	 */
@@ -441,7 +441,7 @@ public class AssignmentScene {
 	}
 
 	/**
-	 * Indicates whether the light of the lying lamp should be shown.
+	 * Sets whether the light of the lying lamp should be shown.
 	 * 
 	 * @param showLight show or hide the light of the lying lamp
 	 */
@@ -451,7 +451,7 @@ public class AssignmentScene {
 	}
 
 	/**
-	 * Indicates whether the light of one of the standing lamps should be shown.
+	 * Sets whether the light of one of the standing lamps should be shown.
 	 * 
 	 * @param showLight show or hide the light of the standing lamp
 	 */
@@ -460,7 +460,7 @@ public class AssignmentScene {
 	}
 
 	/**
-	 * Indicates whether the light of one of the standing lamps should be shown.
+	 * Sets whether the light of one of the standing lamps should be shown.
 	 * 
 	 * @param showLight show or hide the light of the standing lamp
 	 */
@@ -469,12 +469,20 @@ public class AssignmentScene {
 	}
 
 	/**
-	 * Indicates whether the light of one of the standing lamps should be shown.
+	 * Sets whether the light of one of the standing lamps should be shown.
 	 * 
 	 * @param showLight show or hide the light of the standing lamp
 	 */
 	public void showStandingLampLightThree(boolean showLight) {
 		this.lampFour.showLight(showLight);
+	}
+	
+	/**
+	 * Sets whether the global illumination light is turned on or off.
+	 * @param showLight turn the light on or off
+	 */
+	public void showGlobalLight(boolean showLight) {
+		this.illuminationLight.setSwitchedOn(showLight);
 	}
 
 	/**

@@ -62,7 +62,7 @@ public class Lamp implements AnimatedObject, TexturedObject, RenderContainer {
 		}
 
 		float[] matAmbient = { 0.1f, 0.1f, 0.1f, 1.0f };
-		float[] matDiffuse = { 1.0f, 1.0f, 0.3f, 1.0f };
+		float[] matDiffuse = { 1.0f, 1.0f, 0.5f, 1.0f };
 		float[] matSpecular = { 0.0f, 0.0f, 0.0f, 0.0f };
 		float[] matShininess = { 0.2f };
 		float[] matEmission = { 1.0f, 1.0f, 0.6f, 1.0f };
